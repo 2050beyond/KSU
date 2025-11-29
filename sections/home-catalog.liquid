@@ -2,9 +2,14 @@
   {% if section.blocks.size > 0 %}
     {% for block in section.blocks %}
       {% if block.settings.collection != blank %}
-        {% assign collection = collections[block.settings.collection] %}
+        {% comment %} Handle both collection object and collection handle {% endcomment %}
+        {% if block.settings.collection.handle %}
+          {% assign collection = block.settings.collection %}
+        {% else %}
+          {% assign collection = collections[block.settings.collection] %}
+        {% endif %}
         
-        {% if collection %}
+        {% if collection and collection.products.size > 0 %}
           <div class="collection-row" {{ block.shopify_attributes }}>
             <h2 class="collection-title">{{ collection.title }}</h2>
             
