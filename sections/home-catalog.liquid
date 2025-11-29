@@ -33,21 +33,6 @@
             {% endif %}
           {% endfor %}
           
-          {% comment %} Check if new (has "new" tag OR published within 30 days) {% endcomment %}
-          {% assign is_new = false %}
-          {% if product.tags contains 'new' %}
-            {% assign is_new = true %}
-          {% else %}
-            {% comment %} Check if published within last 30 days {% endcomment %}
-            {% assign published_timestamp = product.published_at | date: '%s' | plus: 0 %}
-            {% assign current_timestamp = 'now' | date: '%s' | plus: 0 %}
-            {% assign seconds_since_published = current_timestamp | minus: published_timestamp %}
-            {% assign days_since_published = seconds_since_published | divided_by: 86400 %}
-            {% if days_since_published <= 30 and days_since_published >= 0 %}
-              {% assign is_new = true %}
-            {% endif %}
-          {% endif %}
-          
           <a 
             href="{{ product.url }}" 
             class="product-card" 
@@ -88,12 +73,12 @@
             </div>
             <div class="product-title">
               {{ product.title }}
-              {% if is_new %}
-                <span class="new-badge">[new]</span>
-              {% endif %}
             </div>
             <div class="product-price">
-              {{ product.price | money }}
+              <span>{{ product.price | money }}</span>
+              {% unless product.available %}
+                <span class="sold-dot"></span>
+              {% endunless %}
             </div>
           </a>
         {% endif %}
@@ -154,7 +139,8 @@
               {{ product.title }}
             </div>
             <div class="product-price">
-              sold out
+              <span>{{ product.price | money }}</span>
+              <span class="sold-dot"></span>
             </div>
           </a>
         {% endunless %}
@@ -269,10 +255,6 @@
     margin-bottom: 5px;
   }
 
-  .new-badge {
-    font-style: italic;
-    margin-left: 5px;
-  }
 
   .product-price {
     font-family: Arial, Helvetica, sans-serif;

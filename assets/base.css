@@ -274,3 +274,14 @@ img {
   height: 100%;
   overflow: hidden;
 }
+
+/* Museum Red Dot - Sold Out Indicator */
+.sold-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #FF0000;
+  margin-left: 6px;
+  vertical-align: middle;
+}
