@@ -46,9 +46,8 @@
 
       <!-- Variant Pickers -->
       <form id="add-to-cart-form" class="product-form">
-        {% for option in product.options_with_values %}
-          <div class="variant-option">
-            <div class="option-name">{{ option.name }}</div>
+        <div class="variant-options">
+          {% for option in product.options_with_values %}
             <div class="option-values">
               {% for value in option.values %}
                 <button
@@ -62,8 +61,8 @@
                 </button>
               {% endfor %}
             </div>
-          </div>
-        {% endfor %}
+          {% endfor %}
+        </div>
 
         <!-- Hidden input for selected variant -->
         <input type="hidden" name="id" id="product-variant-id" value="{{ product.selected_or_first_available_variant.id }}">
@@ -74,8 +73,11 @@
         </button>
       </form>
 
-      <!-- Description -->
-      <div class="product-description">
+      <!-- More Information Toggle -->
+      <button type="button" class="toggle-description">more information</button>
+
+      <!-- Description (Hidden by default) -->
+      <div class="product-description" id="product-description">
         {{ product.description }}
       </div>
     </div>
@@ -125,7 +127,7 @@
     line-height: 1.25;
     text-transform: lowercase;
     color: #000000;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
     font-weight: normal;
   }
 
@@ -135,27 +137,23 @@
     line-height: 1.25;
     text-transform: lowercase;
     color: #000000;
-    margin-bottom: 30px;
+    margin-bottom: 12px;
   }
 
-  /* Variant Options - Pill Style */
-  .variant-option {
-    margin-bottom: 20px;
-  }
-
-  .option-name {
-    font-family: Arial, sans-serif;
-    font-size: 12px;
-    line-height: 1.25;
-    text-transform: lowercase;
-    color: #999999;
-    margin-bottom: 8px;
+  /* Variant Options - Compact Pills */
+  .variant-options {
+    margin-bottom: 12px;
   }
 
   .option-values {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .option-values:last-child {
+    margin-bottom: 0;
   }
 
   .variant-value {
@@ -167,9 +165,12 @@
     border: 1px solid #e5e5e5;
     border-radius: 999px;
     padding: 8px 16px;
+    height: 36px;
     cursor: pointer;
     color: #000000;
     transition: all 0.2s;
+    display: flex;
+    align-items: center;
   }
 
   .variant-value:hover {
@@ -186,7 +187,8 @@
   .add-to-cart-btn {
     width: auto;
     min-width: 200px;
-    padding: 12px 24px;
+    padding: 0 24px;
+    height: 36px;
     background: #000000;
     color: #FFFFFF;
     font-family: Arial, sans-serif;
@@ -196,9 +198,11 @@
     border: none;
     border-radius: 999px;
     cursor: pointer;
-    margin-top: 20px;
-    margin-bottom: 30px;
+    margin-bottom: 12px;
     transition: opacity 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .add-to-cart-btn:hover {
@@ -210,19 +214,50 @@
     cursor: not-allowed;
   }
 
-  /* Description */
-  .product-description {
+  /* Toggle Description Button */
+  .toggle-description {
     font-family: Arial, sans-serif;
     font-size: 12px;
-    line-height: 1.5;
+    line-height: 1.25;
     text-transform: lowercase;
     color: #000000;
-    margin-top: 30px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .toggle-description:hover {
+    opacity: 0.6;
+  }
+
+  /* Description (Hidden by default) */
+  .product-description {
+    display: none;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.4;
+    text-transform: lowercase;
+    color: #000000;
     max-width: 420px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .product-description.is-visible {
+    display: block;
+    opacity: 1;
   }
 
   .product-description p {
-    margin-bottom: 15px;
+    margin-bottom: 0;
+  }
+
+  .product-description p + p {
+    margin-top: 1em;
   }
 </style>
 
@@ -235,9 +270,9 @@
   {% endfor %}
 
   function selectVariant(button, optionName, value) {
-    // Update selected state
-    const optionGroup = button.closest('.variant-option');
-    const allButtons = optionGroup.querySelectorAll('.variant-value');
+    // Update selected state - find all buttons in the same option group
+    const optionRow = button.closest('.option-values');
+    const allButtons = optionRow.querySelectorAll('.variant-value');
     allButtons.forEach(btn => btn.classList.remove('selected'));
     button.classList.add('selected');
 
@@ -283,6 +318,26 @@
       currency: '{{ shop.currency }}'
     }).format(cents / 100);
   }
+
+  // Description toggle
+  document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.querySelector('.toggle-description');
+    const description = document.getElementById('product-description');
+    
+    if (toggleBtn && description) {
+      toggleBtn.addEventListener('click', function() {
+        const isVisible = description.classList.contains('is-visible');
+        
+        if (isVisible) {
+          description.classList.remove('is-visible');
+          toggleBtn.textContent = 'more information';
+        } else {
+          description.classList.add('is-visible');
+          toggleBtn.textContent = 'less information';
+        }
+      });
+    }
+  });
 
   // Handle form submission
   document.getElementById('add-to-cart-form').addEventListener('submit', async function(e) {
