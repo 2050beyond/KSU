@@ -273,6 +273,11 @@
     filter: grayscale(100%);
   }
 
+  /* Red dot remains visible even with opacity */
+  .product-card.is-sold-out .sold-dot {
+    opacity: 1;
+  }
+
   /* Hide filtered products */
   .product-card.hidden {
     display: none;
