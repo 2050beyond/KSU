@@ -9,7 +9,8 @@
           <img 
             src="{{ image | img_url: '1200x1600' }}" 
             alt="{{ product.title | escape }}"
-            loading="lazy"
+            loading="eager"
+            fetchpriority="high"
             class="active-img"
           >
         {% else %}

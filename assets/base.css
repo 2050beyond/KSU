@@ -1,6 +1,6 @@
-/* Brutally Simple Monoscale Design - Hard Reset */
+/* Brutally Simple Monoscale Design - Optimized */
 
-/* Scorched Earth Font Rule - Universal */
+/* Universal Reset */
 * {
   margin: 0;
   padding: 0;
@@ -27,9 +27,14 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Force all headings to 12px Arial */
+/* Consolidated Typography - Headings, Products, RTE */
 h1, h2, h3, h4, h5, h6,
-.h0, .h1, .h2, .h3, .h4, .h5, .h6 {
+.h0, .h1, .h2, .h3, .h4, .h5, .h6,
+.product__title, .product-card__title, .product-title,
+.section-title, .page-title,
+.rte, .rte p, .rte h1, .rte h2, .rte h3,
+.shopify-section h1, .shopify-section h2, .shopify-section h3,
+.shopify-section h4, .shopify-section h5, .shopify-section h6 {
   font-family: Arial, Helvetica, sans-serif !important;
   font-size: 12px !important;
   line-height: 1.25 !important;
@@ -39,36 +44,6 @@ h1, h2, h3, h4, h5, h6,
   letter-spacing: 0px !important;
   margin: 0 !important;
   padding: 0 !important;
-}
-
-/* Shopify-specific product classes */
-.product__title,
-.product-card__title,
-.product-title,
-.section-title,
-.page-title {
-  font-family: Arial, Helvetica, sans-serif !important;
-  font-size: 12px !important;
-  line-height: 1.25 !important;
-  font-weight: 400 !important;
-  text-transform: lowercase !important;
-  color: #7E857A !important;
-  letter-spacing: 0px !important;
-}
-
-/* Rich Text Editor */
-.rte,
-.rte p,
-.rte h1,
-.rte h2,
-.rte h3 {
-  font-family: Arial, Helvetica, sans-serif !important;
-  font-size: 12px !important;
-  line-height: 1.25 !important;
-  font-weight: 400 !important;
-  text-transform: lowercase !important;
-  color: #7E857A !important;
-  letter-spacing: 0px !important;
 }
 
 /* Links */
@@ -86,7 +61,7 @@ a:hover {
   text-decoration: underline !important;
 }
 
-/* Buttons - Monoscale (Only for actual buttons, not text links) */
+/* Buttons - Exclude text links */
 button:not(.filter-link):not(.toggle-description):not(.carousel-arrow-ghost):not(.cart-item-remove):not(.remove-item),
 .btn:not(.filter-link):not(.toggle-description):not(.cart-item-remove):not(.remove-item),
 .button:not(.filter-link):not(.toggle-description):not(.cart-item-remove):not(.remove-item) {
@@ -127,16 +102,13 @@ button[type="submit"]:not(.add-to-cart-btn):hover,
   opacity: 0.9;
 }
 
-/* Add to Bag Button - Specific styling in main-product.liquid takes precedence */
 .add-to-cart-btn {
   width: max-content !important;
   display: inline-flex !important;
 }
 
-/* Inputs - Monoscale */
-input,
-select,
-textarea {
+/* Inputs */
+input, select, textarea {
   font-family: Arial, Helvetica, sans-serif !important;
   font-size: 12px !important;
   line-height: 1.25 !important;
@@ -149,47 +121,40 @@ textarea {
   letter-spacing: 0px !important;
 }
 
-input:focus,
-select:focus,
-textarea:focus {
+input:focus, select:focus, textarea:focus {
   outline: none !important;
   border-color: #7E857A !important;
 }
 
-/* Paragraphs and Text */
-p {
+/* Text Elements */
+p, li, span, div, section, article, aside, header, footer, main {
   font-size: 12px !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+p {
   line-height: 1.25 !important;
   font-weight: 400 !important;
   text-transform: lowercase !important;
   color: #7E857A !important;
-  font-family: Arial, Helvetica, sans-serif !important;
   letter-spacing: 0px !important;
   margin: 0 !important;
 }
 
-/* Lists */
 ul, ol {
   list-style: none !important;
-  font-size: 12px !important;
-  font-family: Arial, Helvetica, sans-serif !important;
 }
 
 li {
-  font-size: 12px !important;
   line-height: 1.25 !important;
   font-weight: 400 !important;
   text-transform: lowercase !important;
   color: #7E857A !important;
-  font-family: Arial, Helvetica, sans-serif !important;
   letter-spacing: 0px !important;
 }
 
 /* Navigation */
-nav a,
-.nav-link,
-.filter-link,
-.header__menu-item {
+nav a, .nav-link, .filter-link, .header__menu-item {
   font-size: 12px !important;
   font-weight: 400 !important;
   text-transform: lowercase !important;
@@ -203,7 +168,7 @@ img {
   border-radius: 4px;
 }
 
-/* Ghost Button Carousel Arrows - Completely Transparent */
+/* Carousel Arrows */
 .carousel-arrow-ghost {
   position: absolute;
   top: 0;
@@ -242,20 +207,18 @@ img {
   stroke: #7E857A;
 }
 
-/* Desktop: Show arrows on hover */
 .product-card:hover .carousel-arrow-ghost,
 .product-carousel-wrapper:hover .carousel-arrow-ghost {
   opacity: 1;
 }
 
-/* Mobile: Always show arrows */
 @media (max-width: 768px) {
   .carousel-arrow-ghost {
     opacity: 1;
   }
 }
 
-/* Image Stacking for Carousels */
+/* Image Carousel Stacking */
 .image-carousel-container {
   position: relative;
   width: 100%;
@@ -280,33 +243,4 @@ img {
 .image-carousel-container img.active-img {
   opacity: 1;
   z-index: 2;
-}
-
-/* Force Shopify default elements to 12px Arial */
-.shopify-section h1,
-.shopify-section h2,
-.shopify-section h3,
-.shopify-section h4,
-.shopify-section h5,
-.shopify-section h6 {
-  font-family: Arial, Helvetica, sans-serif !important;
-  font-size: 12px !important;
-  font-weight: 400 !important;
-  line-height: 1.25 !important;
-  text-transform: lowercase !important;
-  color: #7E857A !important;
-  letter-spacing: 0px !important;
-}
-
-/* Ensure no element escapes the 12px rule */
-span,
-div,
-section,
-article,
-aside,
-header,
-footer,
-main {
-  font-size: 12px !important;
-  font-family: Arial, Helvetica, sans-serif !important;
 }
