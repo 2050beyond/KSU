@@ -88,12 +88,18 @@ async function removeCartItem(itemId) {
   }
 }
 
-// Format money
+// Format money (Shopify format)
 function formatMoney(cents) {
+  // Get currency from cart or use default
+  const currency = window.Shopify?.currency?.active || 'USD';
+  const amount = cents / 100;
+  
+  // Simple formatting - Shopify will handle currency symbol
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: window.Shopify?.currency?.active || 'USD'
-  }).format(cents / 100);
+    currency: currency,
+    minimumFractionDigits: 2
+  }).format(amount);
 }
 
 // Mini cart dropdown interactions
