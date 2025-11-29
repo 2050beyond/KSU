@@ -244,12 +244,27 @@
     filter: brightness(0.9);
   }
 
-  .add-to-cart-btn:disabled {
+  .add-to-cart-btn:disabled:not(.is-sold) {
     background: transparent;
     color: #CCCCCC;
     border-color: #CCCCCC;
     cursor: not-allowed;
     filter: none;
+  }
+
+  /* Strong Red Sold Out Button */
+  .add-to-cart-btn.is-sold,
+  .add-to-cart-btn.is-sold:disabled {
+    background-color: #FF0000 !important;
+    color: #FFFFFF !important;
+    border-color: #FF0000 !important;
+    opacity: 1 !important;
+    cursor: not-allowed;
+    filter: none !important;
+  }
+
+  .add-to-cart-btn.is-sold:hover {
+    opacity: 1 !important;
   }
 
   /* Toggle Description Button - Plain Text Link */
@@ -471,17 +486,30 @@
         updateCartCount();
       }
 
-      button.textContent = 'added to bag';
-      setTimeout(() => {
-        button.textContent = 'add to bag';
-        button.disabled = false;
-      }, 1500);
+      // Only show feedback if not sold out
+      if (!button.classList.contains('is-sold')) {
+        button.textContent = 'added to bag';
+        setTimeout(() => {
+          button.textContent = 'add to bag';
+          button.disabled = false;
+        }, 1500);
+      }
 
     } catch (error) {
       console.error('Error adding to cart:', error);
       alert('failed to add item to bag');
-      button.disabled = false;
-      button.textContent = 'add to bag';
+      // Restore button state based on variant availability
+      const variantId = document.getElementById('product-variant-id').value;
+      const variant = variants.find(v => v.id.toString() === variantId.toString());
+      if (variant && variant.available) {
+        button.disabled = false;
+        button.textContent = 'add to bag';
+        button.classList.remove('is-sold');
+      } else {
+        button.disabled = true;
+        button.textContent = 'sold';
+        button.classList.add('is-sold');
+      }
     }
   });
 </script>

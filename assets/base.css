@@ -122,6 +122,21 @@ button[type="submit"]:not(.add-to-cart-btn):hover,
   display: inline-flex !important;
 }
 
+/* Strong Red Sold Out Button - Global Override */
+.add-to-cart-btn.is-sold,
+.add-to-cart-btn.is-sold:disabled {
+  background-color: #FF0000 !important;
+  color: #FFFFFF !important;
+  border-color: #FF0000 !important;
+  opacity: 1 !important;
+  cursor: not-allowed !important;
+  filter: none !important;
+}
+
+.add-to-cart-btn.is-sold:hover {
+  opacity: 1 !important;
+}
+
 /* Inputs */
 input, select, textarea {
   font-family: Arial, Helvetica, sans-serif !important;
