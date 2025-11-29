@@ -1,3 +1,5 @@
+/* Brutally Simple Monoscale Design */
+
 * {
   margin: 0;
   padding: 0;
@@ -5,9 +7,10 @@
 }
 
 html, body {
-  font-family: 'New York', 'Times New Roman', Times, serif;
-  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px !important;
   line-height: 1.25;
+  font-weight: 400;
   text-transform: lowercase;
   color: #7E857A;
   background: #FFFFFF;
@@ -15,36 +18,113 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Force all headings to 12px */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px !important;
+  line-height: 1.25;
+  font-weight: 400;
+  text-transform: lowercase;
+  color: #7E857A;
+  margin: 0;
+  padding: 0;
+}
+
+/* Links */
 a {
   text-decoration: none;
-  color: inherit;
+  color: #7E857A;
+  font-size: 12px !important;
+  font-weight: 400;
+  text-transform: lowercase;
 }
 
 a:hover {
   text-decoration: underline;
 }
 
+/* Buttons - Monoscale */
 button {
-  font-family: 'New York', 'Times New Roman', Times, serif;
-  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px !important;
   line-height: 1.25;
+  font-weight: 400;
   text-transform: lowercase;
   background: #FFFFFF;
-  border: none;
+  border: 1px solid rgba(126, 133, 122, 0.3);
   padding: 8px 16px;
   cursor: pointer;
   color: #7E857A;
   border-radius: 999px;
+  transition: all 0.2s;
 }
 
 button:hover {
   text-decoration: underline;
 }
 
-input, select, textarea {
-  border-radius: 12px;
+/* Selected/CTA Button State */
+button.selected,
+button[type="submit"],
+.add-to-cart-btn,
+.cart-checkout-btn {
+  background: #7E857A;
+  color: #FFFFFF;
+  border-color: #7E857A;
 }
 
+button.selected:hover,
+button[type="submit"]:hover,
+.add-to-cart-btn:hover,
+.cart-checkout-btn:hover {
+  text-decoration: none;
+  opacity: 0.9;
+}
+
+/* Inputs - Monoscale */
+input, select, textarea {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px !important;
+  line-height: 1.25;
+  font-weight: 400;
+  text-transform: lowercase;
+  color: #7E857A;
+  border: 1px solid rgba(126, 133, 122, 0.3);
+  border-radius: 12px;
+  padding: 8px 12px;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #7E857A;
+}
+
+/* Paragraphs and Text */
+p {
+  font-size: 12px !important;
+  line-height: 1.25;
+  font-weight: 400;
+  text-transform: lowercase;
+  color: #7E857A;
+  margin: 0;
+}
+
+/* Lists */
+ul, ol {
+  list-style: none;
+  font-size: 12px !important;
+}
+
+li {
+  font-size: 12px !important;
+  line-height: 1.25;
+  font-weight: 400;
+  text-transform: lowercase;
+  color: #7E857A;
+}
+
+/* Images */
 img {
   border-radius: 4px;
 }
@@ -123,4 +203,37 @@ img {
 .image-carousel-container img.active-img {
   opacity: 1;
   z-index: 2;
+}
+
+/* Force Shopify default elements to 12px */
+.shopify-section h1,
+.shopify-section h2,
+.shopify-section h3,
+.product-title,
+.section-title,
+.page-title {
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  line-height: 1.25 !important;
+  text-transform: lowercase !important;
+  color: #7E857A !important;
+}
+
+/* Navigation */
+nav a,
+.nav-link,
+.filter-link {
+  font-size: 12px !important;
+  font-weight: 400;
+  text-transform: lowercase;
+  color: #7E857A;
+}
+
+/* Ensure no element escapes the 12px rule */
+* {
+  font-size: inherit;
+}
+
+span, div, section, article, aside, header, footer, main {
+  font-size: 12px !important;
 }
