@@ -1,11 +1,45 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "home-catalog": {
-      "type": "home-catalog"
+      "type": "home-catalog",
+      "blocks": {
+        "collection_row_bQAxA9": {
+          "type": "collection_row",
+          "settings": {
+            "collection": "collectors-preview"
+          }
+        },
+        "collection_row_gRE7xM": {
+          "type": "collection_row",
+          "settings": {
+            "collection": "commissions"
+          }
+        },
+        "collection_row_eKc6Nq": {
+          "type": "collection_row",
+          "settings": {
+            "collection": "prints"
+          }
+        }
+      },
+      "block_order": [
+        "collection_row_bQAxA9",
+        "collection_row_gRE7xM",
+        "collection_row_eKc6Nq"
+      ],
+      "settings": {}
     }
   },
   "order": [
     "home-catalog"
   ]
 }
-
