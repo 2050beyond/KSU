@@ -29,7 +29,7 @@ async function renderCart() {
 
   let html = '<div class="cart-items">';
   
-  cart.items.forEach(item => {
+  cart.items.forEach((item, index) => {
     const imageUrl = item.image || 'https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-product-1_large.png';
     const variantTitle = item.variant_title && item.variant_title !== 'Default Title' ? item.variant_title : '';
     
@@ -39,9 +39,16 @@ async function renderCart() {
         <div class="cart-item-details">
           <div class="cart-item-title">${item.title}</div>
           ${variantTitle ? `<div class="cart-item-variant">${variantTitle}</div>` : ''}
+          <div class="cart-item-controls">
+            <button class="cart-item-qty-btn" data-action="decrease" data-key="${item.key}" data-quantity="${item.quantity}">−</button>
+            <span class="cart-item-quantity">${item.quantity}</span>
+            <button class="cart-item-qty-btn" data-action="increase" data-key="${item.key}" data-quantity="${item.quantity}">+</button>
+          </div>
         </div>
-        <div class="cart-item-price">${formatMoney(item.line_price)}</div>
-        <button class="cart-item-remove" onclick="removeCartItem(${item.id})">remove</button>
+        <div class="cart-item-right">
+          <div class="cart-item-price">${formatMoney(item.line_price)}</div>
+          <button class="cart-item-remove remove-item" data-key="${item.key}">remove</button>
+        </div>
       </div>
     `;
   });
@@ -61,30 +68,82 @@ async function renderCart() {
   miniCartContent.innerHTML = html;
 }
 
-// Remove item from cart
-async function removeCartItem(itemId) {
-  try {
-    const response = await fetch('/cart/change.js', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        id: itemId,
-        quantity: 0
-      })
-    });
+// Remove item from cart using event delegation
+async function handleCartAction(event) {
+  const target = event.target;
+  const cartDropdown = document.getElementById('cart-dropdown') || document.getElementById('mini-cart');
+  
+  if (!cartDropdown) return;
 
-    if (!response.ok) {
-      throw new Error('failed to remove item');
+  // Handle remove button
+  if (target.classList.contains('remove-item')) {
+    const itemKey = target.dataset.key;
+    if (!itemKey) return;
+
+    try {
+      const response = await fetch('/cart/change.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: itemKey,
+          quantity: 0
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('failed to remove item');
+      }
+
+      // Re-fetch and re-render cart
+      await renderCart();
+      
+    } catch (error) {
+      console.error('Error removing item:', error);
+      alert('failed to remove item');
+    }
+    return;
+  }
+
+  // Handle quantity increase/decrease
+  if (target.classList.contains('cart-item-qty-btn')) {
+    const action = target.dataset.action;
+    const itemKey = target.dataset.key;
+    const currentQuantity = parseInt(target.dataset.quantity) || 1;
+    
+    if (!itemKey) return;
+
+    let newQuantity = currentQuantity;
+    if (action === 'increase') {
+      newQuantity = currentQuantity + 1;
+    } else if (action === 'decrease') {
+      newQuantity = Math.max(0, currentQuantity - 1);
     }
 
-    // Re-render cart
-    await renderCart();
-    
-  } catch (error) {
-    console.error('Error removing item:', error);
-    alert('failed to remove item');
+    try {
+      const response = await fetch('/cart/change.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: itemKey,
+          quantity: newQuantity
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('failed to update quantity');
+      }
+
+      // Re-fetch and re-render cart
+      await renderCart();
+      
+    } catch (error) {
+      console.error('Error updating quantity:', error);
+      alert('failed to update quantity');
+    }
   }
 }
 
@@ -106,12 +165,18 @@ function formatMoney(cents) {
 document.addEventListener('DOMContentLoaded', function() {
   const cartLink = document.getElementById('cart-link');
   const miniCart = document.getElementById('mini-cart');
+  const cartOverlay = document.getElementById('cart-overlay');
   let isMobile = window.innerWidth <= 768;
   
   // Check if mobile on resize
   window.addEventListener('resize', () => {
     isMobile = window.innerWidth <= 768;
   });
+
+  // Event delegation for cart actions (remove, quantity)
+  if (miniCart) {
+    miniCart.addEventListener('click', handleCartAction);
+  }
 
   // Desktop: hover to show with reliable transitions
   if (cartLink && miniCart) {
@@ -155,27 +220,39 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
 
-    // Mobile: click to toggle
+    // Mobile: click to toggle with overlay
     cartLink.addEventListener('click', (e) => {
       if (isMobile) {
         e.preventDefault();
-        if (miniCart.classList.contains('active')) {
-          miniCart.classList.remove('active');
-          miniCart.classList.remove('fade-out');
+        const isOpen = miniCart.classList.contains('is-open');
+        
+        if (isOpen) {
+          miniCart.classList.remove('is-open');
+          if (cartOverlay) cartOverlay.classList.remove('is-open');
         } else {
           renderCart();
-          miniCart.classList.add('active');
-          miniCart.classList.remove('fade-out');
+          miniCart.classList.add('is-open');
+          if (cartOverlay) cartOverlay.classList.add('is-open');
         }
       }
     });
 
+    // Close cart when clicking overlay (mobile)
+    if (cartOverlay) {
+      cartOverlay.addEventListener('click', () => {
+        if (isMobile) {
+          miniCart.classList.remove('is-open');
+          cartOverlay.classList.remove('is-open');
+        }
+      });
+    }
+
     // Close dropdown when clicking outside (mobile)
     document.addEventListener('click', (e) => {
-      if (isMobile && miniCart.classList.contains('active')) {
-        if (!cartLink.contains(e.target) && !miniCart.contains(e.target)) {
-          miniCart.classList.remove('active');
-          miniCart.classList.remove('fade-out');
+      if (isMobile && miniCart.classList.contains('is-open')) {
+        if (!cartLink.contains(e.target) && !miniCart.contains(e.target) && !cartOverlay.contains(e.target)) {
+          miniCart.classList.remove('is-open');
+          if (cartOverlay) cartOverlay.classList.remove('is-open');
         }
       }
     });
@@ -218,7 +295,7 @@ if (addToCartForm) {
       // Update cart count and render mini cart if open
       await updateCartCount();
       const miniCart = document.getElementById('mini-cart');
-      if (miniCart && miniCart.classList.contains('active')) {
+      if (miniCart && (miniCart.classList.contains('active') || miniCart.classList.contains('is-open'))) {
         await renderCart();
       }
       
@@ -240,4 +317,3 @@ if (addToCartForm) {
 // Make functions globally available
 window.updateCartCount = updateCartCount;
 window.renderCart = renderCart;
-window.removeCartItem = removeCartItem;

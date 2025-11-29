@@ -5,8 +5,11 @@
   <div class="cart-container">
     <a href="/checkout" id="cart-link" class="cart-link">cart (<span id="cart-count">0</span>)</a>
     
+    <!-- Cart Overlay (Mobile Only) -->
+    <div class="cart-overlay" id="cart-overlay"></div>
+    
     <!-- Mini Cart Dropdown -->
-    <div class="mini-cart-dropdown" id="mini-cart">
+    <div class="mini-cart-dropdown" id="mini-cart" id="cart-dropdown">
       <div class="mini-cart-content" id="mini-cart-content">
         <!-- Content will be rendered by JavaScript -->
       </div>
@@ -21,6 +24,30 @@
 
   .cart-link {
     cursor: pointer;
+  }
+
+  /* Cart Overlay (Mobile Only) */
+  .cart-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 998;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease-out, visibility 0.2s ease-out;
+  }
+
+  .cart-overlay.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  @media (min-width: 769px) {
+    .cart-overlay {
+      display: none;
+    }
   }
 
   .mini-cart-dropdown {
@@ -67,6 +94,12 @@
     transition: opacity 0.3s ease-in 0.2s, visibility 0.3s ease-in 0.2s;
   }
 
+  .mini-cart-dropdown.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
   .mini-cart-content {
     font-family: Arial, sans-serif;
     font-size: 12px;
@@ -86,7 +119,7 @@
 
   .cart-item {
     display: grid;
-    grid-template-columns: 40px 1fr auto auto;
+    grid-template-columns: 40px 1fr auto;
     gap: 12px;
     align-items: start;
     padding: 12px 0;
@@ -119,6 +152,41 @@
   .cart-item-variant {
     color: #999999;
     font-size: 11px;
+    margin-bottom: 8px;
+  }
+
+  .cart-item-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .cart-item-quantity {
+    font-size: 12px;
+    min-width: 20px;
+    text-align: center;
+  }
+
+  .cart-item-qty-btn {
+    background: none;
+    border: none;
+    color: #000000;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 6px;
+    line-height: 1;
+    font-family: Arial, sans-serif;
+  }
+
+  .cart-item-qty-btn:hover {
+    opacity: 0.6;
+  }
+
+  .cart-item-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
   }
 
   .cart-item-price {
@@ -177,15 +245,24 @@
   /* Mobile */
   @media (max-width: 768px) {
     .mini-cart-dropdown {
-      width: 100vw;
-      right: -20px;
-      left: -20px;
-      margin-top: 10px;
-      border-radius: 12px 12px 0 0;
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 400px;
+      z-index: 999;
+      margin-top: 0;
+      right: auto;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
     }
 
-    .mini-cart-dropdown.active {
-      transition: opacity 0.2s ease-out, visibility 0.2s ease-out;
+    .mini-cart-dropdown.is-open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
     }
   }
 </style>
