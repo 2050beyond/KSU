@@ -58,24 +58,19 @@
                 {% assign image_count = 0 %}
                 {% for image in product.images limit: 5 %}
                   {% assign image_count = image_count | plus: 1 %}
-                  {% if image_count == 1 %}
-                    <img 
-                      src="{{ image | img_url: '600x800' }}" 
-                      alt="{{ product.title | escape }}"
-                      {% if forloop.parentloop.first %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}
-                      class="active-img"
-                    >
-                  {% else %}
-                    <img 
-                      data-src="{{ image | img_url: '600x800' }}" 
-                      alt="{{ product.title | escape }}"
-                      class="inactive-img"
-                    >
-                  {% endif %}
                 {% endfor %}
                 {% if image_count == 0 %}
                   <div class="no-image">no image</div>
                 {% else %}
+                  <div class="carousel-track">
+                    {% for image in product.images limit: 5 %}
+                      <img 
+                        src="{{ image | img_url: '600x800' }}" 
+                        alt="{{ product.title | escape }}"
+                        {% if forloop.first and forloop.parentloop.first %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}
+                      >
+                    {% endfor %}
+                  </div>
                   {% if image_count > 1 %}
                     <button class="carousel-arrow-ghost prev" data-direction="prev">
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -127,24 +122,19 @@
                 {% assign image_count = 0 %}
                 {% for image in product.images limit: 5 %}
                   {% assign image_count = image_count | plus: 1 %}
-                  {% if image_count == 1 %}
-                    <img 
-                      src="{{ image | img_url: '600x800' }}" 
-                      alt="{{ product.title | escape }}"
-                      loading="lazy"
-                      class="active-img"
-                    >
-                  {% else %}
-                    <img 
-                      data-src="{{ image | img_url: '600x800' }}" 
-                      alt="{{ product.title | escape }}"
-                      class="inactive-img"
-                    >
-                  {% endif %}
                 {% endfor %}
                 {% if image_count == 0 %}
                   <div class="no-image">no image</div>
                 {% else %}
+                  <div class="carousel-track">
+                    {% for image in product.images limit: 5 %}
+                      <img 
+                        src="{{ image | img_url: '600x800' }}" 
+                        alt="{{ product.title | escape }}"
+                        loading="lazy"
+                      >
+                    {% endfor %}
+                  </div>
                   {% if image_count > 1 %}
                     <button class="carousel-arrow-ghost prev" data-direction="prev">
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">

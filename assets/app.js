@@ -267,7 +267,7 @@ if (addToCartForm) {
   });
 }
 
-// Carousel Navigation - Event Delegation
+// Carousel Navigation - Native Scroll Snap
 document.addEventListener('click', function(event) {
   const arrow = event.target.closest('.carousel-arrow-ghost');
   if (!arrow) return;
@@ -278,35 +278,17 @@ document.addEventListener('click', function(event) {
   const container = arrow.closest('.image-carousel-container');
   if (!container) return;
 
-  const images = container.querySelectorAll('img');
-  if (images.length <= 1) return;
+  const track = container.querySelector('.carousel-track');
+  if (!track) return;
 
-  const activeImg = container.querySelector('.active-img');
-  if (!activeImg) return;
-
-  const currentIndex = Array.from(images).indexOf(activeImg);
   const direction = arrow.dataset.direction;
-  
-  let nextIndex;
+  const scrollAmount = track.offsetWidth;
+
   if (direction === 'next') {
-    nextIndex = (currentIndex + 1) % images.length;
+    track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
   } else {
-    nextIndex = (currentIndex - 1 + images.length) % images.length;
+    track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
   }
-
-  const nextImg = images[nextIndex];
-
-  // Lazy load if needed
-  if (nextImg.dataset.src && !nextImg.src) {
-    nextImg.src = nextImg.dataset.src;
-    nextImg.removeAttribute('data-src');
-  }
-
-  // Switch active class
-  activeImg.classList.remove('active-img');
-  activeImg.classList.add('inactive-img');
-  nextImg.classList.remove('inactive-img');
-  nextImg.classList.add('active-img');
 });
 
 // Page Transition - Fade In

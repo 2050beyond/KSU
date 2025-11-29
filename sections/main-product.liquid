@@ -5,33 +5,29 @@
       {% assign image_count = 0 %}
       {% for image in product.images limit: 5 %}
         {% assign image_count = image_count | plus: 1 %}
-        {% if image_count == 1 %}
-          <img 
-            src="{{ image | img_url: '1200x1600' }}" 
-            alt="{{ product.title | escape }}"
-            loading="eager"
-            fetchpriority="high"
-            class="active-img"
-          >
-        {% else %}
-          <img 
-            data-src="{{ image | img_url: '1200x1600' }}" 
-            alt="{{ product.title | escape }}"
-            class="inactive-img"
-          >
-        {% endif %}
       {% endfor %}
-      {% if image_count > 1 %}
-        <button class="carousel-arrow-ghost prev" data-direction="prev">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M7.5 9L4.5 6L7.5 3" stroke="#7E857A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        <button class="carousel-arrow-ghost next" data-direction="next">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4.5 3L7.5 6L4.5 9" stroke="#7E857A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
+      {% if image_count > 0 %}
+        <div class="carousel-track">
+          {% for image in product.images limit: 5 %}
+            <img 
+              src="{{ image | img_url: '1200x1600' }}" 
+              alt="{{ product.title | escape }}"
+              {% if forloop.first %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}
+            >
+          {% endfor %}
+        </div>
+        {% if image_count > 1 %}
+          <button class="carousel-arrow-ghost prev" data-direction="prev">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M7.5 9L4.5 6L7.5 3" stroke="#7E857A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button class="carousel-arrow-ghost next" data-direction="next">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4.5 3L7.5 6L4.5 9" stroke="#7E857A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        {% endif %}
       {% endif %}
     </div>
   </div>
