@@ -1,0 +1,324 @@
+<div class="main-product">
+  <!-- Image Carousel (Top Half) -->
+  <div class="product-carousel">
+    {% for image in product.images %}
+      <div class="carousel-slide">
+        <img 
+          src="{{ image | img_url: '1200x1600' }}" 
+          alt="{{ product.title | escape }}"
+          loading="lazy"
+        >
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Product Info (Bottom Half) -->
+  <div class="product-info">
+    <!-- Title -->
+    <h1 class="product-title">{{ product.title }}</h1>
+
+    <!-- Price -->
+    <div class="product-price">{{ product.price | money }}</div>
+
+    <!-- Variant Pickers -->
+    <form id="add-to-cart-form" class="product-form">
+      {% for option in product.options_with_values %}
+        <div class="variant-option">
+          <div class="option-name">{{ option.name }}</div>
+          <div class="option-values">
+            {% for value in option.values %}
+              <button
+                type="button"
+                class="variant-value {% if forloop.first %}selected{% endif %}"
+                data-option="{{ option.name }}"
+                data-value="{{ value }}"
+                onclick="selectVariant(this, '{{ option.name }}', '{{ value }}')"
+              >
+                {{ value }}
+              </button>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+
+      <!-- Hidden input for selected variant -->
+      <input type="hidden" name="id" id="product-variant-id" value="{{ product.selected_or_first_available_variant.id }}">
+
+      <!-- Add to Cart Button -->
+      <button type="submit" class="add-to-cart-btn">
+        add to cart — {{ product.selected_or_first_available_variant.price | money }}
+      </button>
+    </form>
+
+    <!-- Description -->
+    <div class="product-description">
+      {{ product.description }}
+    </div>
+  </div>
+</div>
+
+<style>
+  .main-product {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* Image Carousel */
+  .product-carousel {
+    width: 100vw;
+    height: 70vh;
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    background: #FFFFFF;
+  }
+
+  .product-carousel::-webkit-scrollbar {
+    display: none;
+  }
+
+  .carousel-slide {
+    flex: 0 0 100vw;
+    scroll-snap-align: start;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #FFFFFF;
+  }
+
+  .carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  /* Product Info */
+  .product-info {
+    padding: 20px;
+    flex: 1;
+  }
+
+  .product-title {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.25;
+    text-transform: lowercase;
+    color: #000000;
+    margin-bottom: 15px;
+    font-weight: normal;
+  }
+
+  .product-price {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.25;
+    text-transform: lowercase;
+    color: #000000;
+    margin-bottom: 30px;
+  }
+
+  /* Variant Options */
+  .variant-option {
+    margin-bottom: 25px;
+  }
+
+  .option-name {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.25;
+    text-transform: lowercase;
+    color: #999999;
+    margin-bottom: 10px;
+  }
+
+  .option-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .variant-value {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.25;
+    text-transform: lowercase;
+    background: transparent;
+    border: none;
+    padding: 15px 20px;
+    min-height: 50px;
+    cursor: pointer;
+    color: #999999;
+    text-align: left;
+    transition: all 0.2s;
+  }
+
+  .variant-value:hover {
+    color: #666666;
+  }
+
+  .variant-value.selected {
+    color: #000000;
+    font-weight: bold;
+  }
+
+  /* Add to Cart Button */
+  .add-to-cart-btn {
+    width: 100%;
+    height: 60px;
+    background: #000000;
+    color: #FFFFFF;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.25;
+    text-transform: lowercase;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    transition: opacity 0.2s;
+  }
+
+  .add-to-cart-btn:hover {
+    opacity: 0.8;
+  }
+
+  .add-to-cart-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Description */
+  .product-description {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+    text-transform: lowercase;
+    color: #000000;
+    margin-top: 30px;
+  }
+
+  .product-description p {
+    margin-bottom: 15px;
+  }
+</style>
+
+<script>
+  // Variant selection logic
+  let selectedOptions = {};
+  
+  {% for option in product.options_with_values %}
+    selectedOptions['{{ option.name }}'] = '{{ option.values.first }}';
+  {% endfor %}
+
+  function selectVariant(button, optionName, value) {
+    // Update selected state
+    const optionGroup = button.closest('.variant-option');
+    const allButtons = optionGroup.querySelectorAll('.variant-value');
+    allButtons.forEach(btn => btn.classList.remove('selected'));
+    button.classList.add('selected');
+
+    // Store selection
+    selectedOptions[optionName] = value;
+
+    // Find matching variant
+    const variant = findVariant(selectedOptions);
+    
+    if (variant) {
+      document.getElementById('product-variant-id').value = variant.id;
+      
+      // Update price in button
+      const price = formatMoney(variant.price);
+      const addToCartBtn = document.querySelector('.add-to-cart-btn');
+      addToCartBtn.textContent = `add to cart — ${price}`;
+      
+      // Disable button if variant unavailable
+      addToCartBtn.disabled = !variant.available;
+    }
+  }
+
+  function findVariant(options) {
+    const variants = {{ product.variants | json }};
+    
+    for (let variant of variants) {
+      let match = true;
+      for (let i = 0; i < variant.options.length; i++) {
+        const optionName = {{ product.options | json }}[i];
+        if (options[optionName] !== variant.options[i]) {
+          match = false;
+          break;
+        }
+      }
+      if (match) return variant;
+    }
+    return null;
+  }
+
+  function formatMoney(cents) {
+    return new Intl.NumberFormat('{{ shop.locale }}', {
+      style: 'currency',
+      currency: '{{ shop.currency }}'
+    }).format(cents / 100);
+  }
+
+  // Handle form submission
+  document.getElementById('add-to-cart-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const variantId = document.getElementById('product-variant-id').value;
+    const button = this.querySelector('.add-to-cart-btn');
+    
+    if (!variantId) {
+      alert('please select all options');
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = 'adding...';
+
+    try {
+      const response = await fetch('/cart/add.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: variantId,
+          quantity: 1
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('failed to add to cart');
+      }
+
+      // Update cart count
+      if (typeof updateCartCount === 'function') {
+        updateCartCount();
+      }
+
+      button.textContent = 'added to cart';
+      setTimeout(() => {
+        button.textContent = `add to cart — ${formatMoney(parseInt(document.getElementById('product-variant-id').value) ? findVariant(selectedOptions).price : {{ product.selected_or_first_available_variant.price | json }})}`;
+        button.disabled = false;
+      }, 1500);
+
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      alert('failed to add item to cart');
+      button.disabled = false;
+      button.textContent = `add to cart — ${formatMoney(findVariant(selectedOptions).price)}`;
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Main Product",
+  "settings": []
+}
+{% endschema %}
+
