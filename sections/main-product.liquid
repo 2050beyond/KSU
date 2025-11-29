@@ -302,7 +302,9 @@
 
       button.textContent = 'added to cart';
       setTimeout(() => {
-        button.textContent = `add to cart — ${formatMoney(parseInt(document.getElementById('product-variant-id').value) ? findVariant(selectedOptions).price : {{ product.selected_or_first_available_variant.price | json }})}`;
+        const currentVariant = findVariant(selectedOptions);
+        const price = currentVariant ? formatMoney(currentVariant.price) : '{{ product.selected_or_first_available_variant.price | money }}';
+        button.textContent = `add to cart — ${price}`;
         button.disabled = false;
       }, 1500);
 
