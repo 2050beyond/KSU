@@ -1,10 +1,8 @@
 <footer class="site-footer">
   {% if section.settings.menu != blank %}
-    {% assign footer_menu = linklists[section.settings.menu] %}
-    
-    {% if footer_menu.links.size > 0 %}
+    {% if section.settings.menu.links.size > 0 %}
       <nav class="footer-nav">
-        {% for link in footer_menu.links %}
+        {% for link in section.settings.menu.links %}
           <a href="{{ link.url }}" class="footer-link">{{ link.title }}</a>
         {% endfor %}
       </nav>
