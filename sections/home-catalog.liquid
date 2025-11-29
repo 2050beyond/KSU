@@ -23,9 +23,28 @@
           {% endif %}
         {% endfor %}
         
+        {% comment %} Check if sold out {% endcomment %}
+        {% assign is_sold_out = false %}
+        {% unless product.available %}
+          {% assign is_sold_out = true %}
+        {% endunless %}
+        
+        {% comment %} Check if new (has "new" tag OR published within 30 days) {% endcomment %}
+        {% assign is_new = false %}
+        {% if product.tags contains 'new' %}
+          {% assign is_new = true %}
+        {% else %}
+          {% assign published_date = product.published_at | date: '%s' %}
+          {% assign current_date = 'now' | date: '%s' %}
+          {% assign days_since_published = current_date | minus: published_date | divided_by: 86400 %}
+          {% if days_since_published <= 30 %}
+            {% assign is_new = true %}
+          {% endif %}
+        {% endif %}
+        
         <a 
           href="{{ product.url }}" 
-          class="product-card" 
+          class="product-card {% if is_sold_out %}is-sold-out{% endif %}" 
           data-collection-handles="{{ product_collections }}"
         >
           <div class="product-image">
@@ -39,8 +58,19 @@
               <div class="no-image">no image</div>
             {% endif %}
           </div>
-          <div class="product-title">{{ product.title }}</div>
-          <div class="product-price">{{ product.price | money }}</div>
+          <div class="product-title">
+            {{ product.title }}
+            {% if is_new and is_sold_out == false %}
+              <span class="new-badge">[new]</span>
+            {% endif %}
+          </div>
+          <div class="product-price">
+            {% if is_sold_out %}
+              sold out
+            {% else %}
+              {{ product.price | money }}
+            {% endif %}
+          </div>
         </a>
       {% endfor %}
     </div>
@@ -133,11 +163,26 @@
     margin-bottom: 5px;
   }
 
+  .new-badge {
+    font-style: italic;
+    margin-left: 5px;
+  }
+
   .product-price {
     font-family: Arial, sans-serif;
     font-size: 12px;
     line-height: 1.25;
     text-transform: lowercase;
+  }
+
+  /* Sold Out Styling */
+  .product-card.is-sold-out {
+    opacity: 0.5;
+    color: #888888;
+  }
+
+  .product-card.is-sold-out .product-image img {
+    filter: grayscale(100%);
   }
 
   /* Hide filtered products */
