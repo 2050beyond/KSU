@@ -113,8 +113,7 @@ button:not(.filter-link):not(.toggle-description):not(.carousel-arrow-ghost):hov
 
 /* Selected/CTA Button State */
 button.selected,
-button[type="submit"],
-.add-to-cart-btn,
+button[type="submit"]:not(.add-to-cart-btn),
 .cart-checkout-btn {
   background: #7E857A !important;
   color: #FFFFFF !important;
@@ -122,11 +121,16 @@ button[type="submit"],
 }
 
 button.selected:hover,
-button[type="submit"]:hover,
-.add-to-cart-btn:hover,
+button[type="submit"]:not(.add-to-cart-btn):hover,
 .cart-checkout-btn:hover {
   text-decoration: none !important;
   opacity: 0.9;
+}
+
+/* Add to Bag Button - Specific styling in main-product.liquid takes precedence */
+.add-to-cart-btn {
+  width: max-content !important;
+  display: inline-flex !important;
 }
 
 /* Inputs - Monoscale */
