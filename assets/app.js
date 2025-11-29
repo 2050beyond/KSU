@@ -70,14 +70,16 @@ async function renderCart() {
 
 // Remove item from cart using event delegation
 async function handleCartAction(event) {
-  const target = event.target;
   const cartDropdown = document.getElementById('mini-cart');
-  
   if (!cartDropdown) return;
 
-  // Handle remove button
-  if (target.classList.contains('remove-item')) {
-    const itemKey = target.dataset.key;
+  // Handle remove button - use closest to find the button even if clicking on text
+  const removeBtn = event.target.closest('.remove-item');
+  if (removeBtn) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    const itemKey = removeBtn.dataset.key;
     if (!itemKey) return;
 
     try {
@@ -96,7 +98,7 @@ async function handleCartAction(event) {
         throw new Error('failed to remove item');
       }
 
-      // Re-fetch and re-render cart
+      // Re-fetch and re-render cart immediately
       await renderCart();
       
     } catch (error) {
@@ -106,11 +108,15 @@ async function handleCartAction(event) {
     return;
   }
 
-  // Handle quantity increase/decrease
-  if (target.classList.contains('cart-item-qty-btn')) {
-    const action = target.dataset.action;
-    const itemKey = target.dataset.key;
-    const currentQuantity = parseInt(target.dataset.quantity) || 1;
+  // Handle quantity increase/decrease - use closest to find the button
+  const qtyBtn = event.target.closest('.cart-item-qty-btn');
+  if (qtyBtn) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    const action = qtyBtn.dataset.action;
+    const itemKey = qtyBtn.dataset.key;
+    const currentQuantity = parseInt(qtyBtn.dataset.quantity) || 1;
     
     if (!itemKey) return;
 
@@ -119,6 +125,33 @@ async function handleCartAction(event) {
       newQuantity = currentQuantity + 1;
     } else if (action === 'decrease') {
       newQuantity = Math.max(0, currentQuantity - 1);
+    }
+
+    // If quantity becomes 0, remove the item
+    if (newQuantity === 0) {
+      try {
+        const response = await fetch('/cart/change.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: itemKey,
+            quantity: 0
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('failed to remove item');
+        }
+
+        await renderCart();
+        return;
+      } catch (error) {
+        console.error('Error removing item:', error);
+        alert('failed to remove item');
+        return;
+      }
     }
 
     try {
@@ -137,7 +170,7 @@ async function handleCartAction(event) {
         throw new Error('failed to update quantity');
       }
 
-      // Re-fetch and re-render cart
+      // Re-fetch and re-render cart immediately
       await renderCart();
       
     } catch (error) {
@@ -174,6 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // Event delegation for cart actions (remove, quantity)
+  // Attach to the cart dropdown container for reliable event delegation
   if (miniCart) {
     miniCart.addEventListener('click', handleCartAction);
   }
