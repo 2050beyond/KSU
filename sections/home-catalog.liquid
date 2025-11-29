@@ -175,32 +175,38 @@
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 15px;
     margin-bottom: 30px;
     padding: 0 20px;
   }
 
   .filter-link {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 12px;
-    line-height: 1.25;
-    text-transform: lowercase;
-    background: transparent;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    color: #999999;
-    text-decoration: none;
-    transition: color 0.2s;
+    font-family: Arial, Helvetica, sans-serif !important;
+    font-size: 12px !important;
+    line-height: 1.25 !important;
+    text-transform: lowercase !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    cursor: pointer !important;
+    color: #7E857A !important;
+    text-decoration: none !important;
+    font-weight: 400 !important;
+    border-radius: 0 !important;
+    transition: text-decoration 0.2s;
+    display: inline !important;
   }
 
   .filter-link:hover {
-    color: #666666;
+    text-decoration: underline !important;
+    color: #7E857A !important;
   }
 
   .filter-link.active {
-    color: #7E857A;
-    font-weight: bold;
+    color: #7E857A !important;
+    font-weight: 700 !important;
+    text-decoration: none !important;
   }
 
   /* Product Grid */

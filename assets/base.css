@@ -86,10 +86,10 @@ a:hover {
   text-decoration: underline !important;
 }
 
-/* Buttons - Monoscale */
-button,
-.btn,
-.button {
+/* Buttons - Monoscale (Only for actual buttons, not text links) */
+button:not(.filter-link):not(.toggle-description):not(.carousel-arrow-ghost),
+.btn:not(.filter-link):not(.toggle-description),
+.button:not(.filter-link):not(.toggle-description) {
   font-family: Arial, Helvetica, sans-serif !important;
   font-size: 12px !important;
   line-height: 1.25 !important;
@@ -105,9 +105,9 @@ button,
   transition: all 0.2s;
 }
 
-button:hover,
-.btn:hover,
-.button:hover {
+button:not(.filter-link):not(.toggle-description):not(.carousel-arrow-ghost):hover,
+.btn:not(.filter-link):not(.toggle-description):hover,
+.button:not(.filter-link):not(.toggle-description):hover {
   text-decoration: underline !important;
 }
 
@@ -199,7 +199,7 @@ img {
   border-radius: 4px;
 }
 
-/* Ghost Button Carousel Arrows */
+/* Ghost Button Carousel Arrows - Completely Transparent */
 .carousel-arrow-ghost {
   position: absolute;
   top: 0;
@@ -207,14 +207,17 @@ img {
   width: 25%;
   z-index: 10;
   cursor: pointer;
-  background: transparent;
-  border: none;
-  padding: 0;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
   transition: opacity 0.2s ease;
+  box-shadow: none !important;
+  outline: none !important;
 }
 
 .carousel-arrow-ghost.prev {

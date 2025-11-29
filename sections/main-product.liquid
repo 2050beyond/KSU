@@ -23,12 +23,12 @@
       {% if image_count > 1 %}
         <button class="carousel-arrow-ghost prev" data-direction="prev">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M7.5 9L4.5 6L7.5 3" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M7.5 9L4.5 6L7.5 3" stroke="#7E857A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
         <button class="carousel-arrow-ghost next" data-direction="next">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M4.5 3L7.5 6L4.5 9" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M4.5 3L7.5 6L4.5 9" stroke="#7E857A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
       {% endif %}
@@ -241,24 +241,28 @@
     cursor: not-allowed;
   }
 
-  /* Toggle Description Button */
+  /* Toggle Description Button - Plain Text Link */
   .toggle-description {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 12px;
-    line-height: 1.25;
-    text-transform: lowercase;
-    color: #7E857A;
-    background: transparent;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    text-decoration: underline;
-    margin-bottom: 12px;
-    display: block;
+    font-family: Arial, Helvetica, sans-serif !important;
+    font-size: 12px !important;
+    line-height: 1.25 !important;
+    text-transform: lowercase !important;
+    color: #7E857A !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 0 12px 0 !important;
+    cursor: pointer !important;
+    text-decoration: underline !important;
+    font-weight: 400 !important;
+    border-radius: 0 !important;
+    display: inline-block !important;
+    transition: opacity 0.2s;
   }
 
   .toggle-description:hover {
     opacity: 0.6;
+    text-decoration: underline !important;
   }
 
   /* Description (Hidden by default) */
