@@ -77,14 +77,14 @@
         <!-- Hidden input for selected variant -->
         <input type="hidden" name="id" id="product-variant-id" value="{{ product.selected_or_first_available_variant.id }}">
 
-        <!-- Add to Cart Button -->
+        <!-- Add to Bag Button -->
         <button type="submit" class="add-to-cart-btn">
-          add to cart
+          add to bag
         </button>
       </form>
 
-      <!-- More Information Toggle -->
-      <button type="button" class="toggle-description">more information</button>
+      <!-- Read More Toggle -->
+      <button type="button" class="toggle-description">read more</button>
 
       <!-- Description (Hidden by default) -->
       <div class="product-description" id="product-description">
@@ -180,37 +180,42 @@
     font-size: 12px;
     line-height: 1.25;
     text-transform: lowercase;
-    background: #fefefe;
+    background: transparent;
     border: 1px solid rgba(126, 133, 122, 0.3);
     border-radius: 999px;
     padding: 8px 16px;
     height: 36px;
     cursor: pointer;
     color: #7E857A;
+    opacity: 0.6;
     transition: all 0.2s;
     display: flex;
     align-items: center;
+    justify-content: center;
   }
 
   .variant-value:hover {
-    background: #f5f5f5;
+    opacity: 0.8;
   }
 
   .variant-value.selected {
-    background: #7E857A;
-    color: #FFFFFF;
-    border-color: #7E857A;
+    background: transparent;
+    color: #7E857A;
+    border: 2px solid #7E857A;
+    opacity: 1;
+    font-weight: 400;
   }
 
   .variant-value.is-unavailable {
-    opacity: 0.3;
-    text-decoration: line-through;
-    cursor: not-allowed;
     background: transparent;
+    border: 1px solid #CCCCCC;
+    color: #CCCCCC;
+    opacity: 1;
+    cursor: not-allowed;
     pointer-events: none;
   }
 
-  /* Add to Cart Button - Compact */
+  /* Add to Bag Button - Apple Style CTA */
   .add-to-cart-btn {
     width: auto;
     min-width: 200px;
@@ -233,7 +238,7 @@
   }
 
   .add-to-cart-btn:hover {
-    opacity: 0.8;
+    opacity: 0.9;
   }
 
   .add-to-cart-btn:disabled {
@@ -361,9 +366,9 @@
     if (variant) {
       document.getElementById('product-variant-id').value = variant.id;
       
-      // Update button text (no price)
+      // Update button text
       const addToCartBtn = document.querySelector('.add-to-cart-btn');
-      addToCartBtn.textContent = 'add to cart';
+      addToCartBtn.textContent = 'add to bag';
       
       // Disable button if variant unavailable
       addToCartBtn.disabled = !variant.available;
@@ -406,10 +411,10 @@
         
         if (isVisible) {
           description.classList.remove('is-visible');
-          toggleBtn.textContent = 'more information';
+          toggleBtn.textContent = 'read more';
         } else {
           description.classList.add('is-visible');
-          toggleBtn.textContent = 'less information';
+          toggleBtn.textContent = 'read less';
         }
       });
     }
@@ -454,17 +459,17 @@
         updateCartCount();
       }
 
-      button.textContent = 'added to cart';
+      button.textContent = 'added to bag';
       setTimeout(() => {
-        button.textContent = 'add to cart';
+        button.textContent = 'add to bag';
         button.disabled = false;
       }, 1500);
 
     } catch (error) {
       console.error('Error adding to cart:', error);
-      alert('failed to add item to cart');
+      alert('failed to add item to bag');
       button.disabled = false;
-      button.textContent = 'add to cart';
+      button.textContent = 'add to bag';
     }
   });
 </script>
