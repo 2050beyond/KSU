@@ -5,9 +5,12 @@
 }
 
 html, body {
-  font-family: "Times New Roman", Times, serif;
-  font-size: 10px;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  line-height: 1.25;
   text-transform: lowercase;
+  color: #000000;
+  background: #FFFFFF;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -22,18 +25,17 @@ a:hover {
 }
 
 button {
-  font-family: "Times New Roman", Times, serif;
-  font-size: 10px;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  line-height: 1.25;
   text-transform: lowercase;
-  background: white;
-  border: 1px solid black;
+  background: #FFFFFF;
+  border: none;
   padding: 8px 16px;
   cursor: pointer;
-  color: black;
+  color: #000000;
 }
 
 button:hover {
-  background: black;
-  color: white;
+  text-decoration: underline;
 }
-

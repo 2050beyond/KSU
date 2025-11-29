@@ -1,0 +1,122 @@
+<div class="home-catalog">
+  {% for block in section.blocks %}
+    {% assign collection = collections[block.settings.collection] %}
+    
+    {% if collection and collection.products.size > 0 %}
+      <div class="collection-row" {{ block.shopify_attributes }}>
+        <h2 class="collection-title">{{ collection.title }}</h2>
+        
+        <div class="product-carousel">
+          {% for product in collection.products %}
+            <a href="{{ product.url }}" class="product-card">
+              <div class="product-image">
+                {% if product.featured_image %}
+                  <img 
+                    src="{{ product.featured_image | img_url: '400x533' }}" 
+                    alt="{{ product.title | escape }}"
+                    loading="lazy"
+                  >
+                {% endif %}
+              </div>
+              <div class="product-title">{{ product.title }}</div>
+              <div class="product-price">{{ product.price | money }}</div>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>
+
+<style>
+  .home-catalog {
+    padding: 20px 0;
+  }
+
+  .collection-row {
+    margin-bottom: 40px;
+  }
+
+  .collection-title {
+    font-size: 12px;
+    font-weight: normal;
+    margin-bottom: 15px;
+    text-transform: lowercase;
+  }
+
+  .product-carousel {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .product-carousel::-webkit-scrollbar {
+    display: none;
+  }
+
+  .product-card {
+    flex: 0 0 auto;
+    width: 200px;
+    text-decoration: none;
+    color: #000000;
+  }
+
+  .product-image {
+    aspect-ratio: 3/4;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+
+  .product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .product-title {
+    font-size: 12px;
+    line-height: 1.25;
+    margin-bottom: 5px;
+    text-transform: lowercase;
+  }
+
+  .product-price {
+    font-size: 12px;
+    line-height: 1.25;
+    text-transform: lowercase;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Home Catalog",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "collection_row",
+      "name": "Collection Row",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home Catalog",
+      "blocks": [
+        {
+          "type": "collection_row"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+

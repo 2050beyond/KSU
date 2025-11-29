@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "home-catalog": {
+      "type": "home-catalog"
+    }
+  },
+  "order": [
+    "home-catalog"
+  ]
+}
+
