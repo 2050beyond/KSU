@@ -43,11 +43,11 @@ async function renderCart() {
             <button class="cart-item-qty-btn" data-action="decrease" data-key="${item.key}" data-quantity="${item.quantity}">−</button>
             <span class="cart-item-quantity">${item.quantity}</span>
             <button class="cart-item-qty-btn" data-action="increase" data-key="${item.key}" data-quantity="${item.quantity}">+</button>
+            <button class="cart-item-remove remove-item" data-key="${item.key}">remove</button>
           </div>
         </div>
         <div class="cart-item-right">
           <div class="cart-item-price">${formatMoney(item.line_price)}</div>
-          <button class="cart-item-remove remove-item" data-key="${item.key}">remove</button>
         </div>
       </div>
     `;
