@@ -5,11 +5,11 @@
 }
 
 html, body {
-  font-family: Arial, sans-serif;
+  font-family: 'New York', 'Times New Roman', Times, serif;
   font-size: 12px;
   line-height: 1.25;
   text-transform: lowercase;
-  color: #000000;
+  color: #7E857A;
   background: #FFFFFF;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -25,7 +25,7 @@ a:hover {
 }
 
 button {
-  font-family: Arial, sans-serif;
+  font-family: 'New York', 'Times New Roman', Times, serif;
   font-size: 12px;
   line-height: 1.25;
   text-transform: lowercase;
@@ -33,7 +33,7 @@ button {
   border: none;
   padding: 8px 16px;
   cursor: pointer;
-  color: #000000;
+  color: #7E857A;
   border-radius: 999px;
 }
 
@@ -79,6 +79,10 @@ img {
   width: 12px;
   height: 12px;
   pointer-events: none;
+}
+
+.carousel-arrow-ghost svg path {
+  stroke: #7E857A;
 }
 
 /* Desktop: Show arrows on hover */
