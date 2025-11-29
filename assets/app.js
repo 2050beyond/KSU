@@ -113,18 +113,45 @@ document.addEventListener('DOMContentLoaded', function() {
     isMobile = window.innerWidth <= 768;
   });
 
-  // Desktop: hover to show
+  // Desktop: hover to show with reliable transitions
   if (cartLink && miniCart) {
+    let hoverTimeout;
+    
     cartLink.addEventListener('mouseenter', () => {
       if (!isMobile) {
+        clearTimeout(hoverTimeout);
         renderCart();
+        miniCart.classList.remove('fade-out');
         miniCart.classList.add('active');
       }
     });
 
     cartLink.addEventListener('mouseleave', () => {
       if (!isMobile) {
-        miniCart.classList.remove('active');
+        miniCart.classList.add('fade-out');
+        hoverTimeout = setTimeout(() => {
+          miniCart.classList.remove('active');
+          miniCart.classList.remove('fade-out');
+        }, 500);
+      }
+    });
+
+    // Keep dropdown open when hovering over it
+    miniCart.addEventListener('mouseenter', () => {
+      if (!isMobile) {
+        clearTimeout(hoverTimeout);
+        miniCart.classList.remove('fade-out');
+        miniCart.classList.add('active');
+      }
+    });
+
+    miniCart.addEventListener('mouseleave', () => {
+      if (!isMobile) {
+        miniCart.classList.add('fade-out');
+        hoverTimeout = setTimeout(() => {
+          miniCart.classList.remove('active');
+          miniCart.classList.remove('fade-out');
+        }, 500);
       }
     });
 
@@ -134,9 +161,11 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         if (miniCart.classList.contains('active')) {
           miniCart.classList.remove('active');
+          miniCart.classList.remove('fade-out');
         } else {
           renderCart();
           miniCart.classList.add('active');
+          miniCart.classList.remove('fade-out');
         }
       }
     });
@@ -146,6 +175,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (isMobile && miniCart.classList.contains('active')) {
         if (!cartLink.contains(e.target) && !miniCart.contains(e.target)) {
           miniCart.classList.remove('active');
+          miniCart.classList.remove('fade-out');
         }
       }
     });
