@@ -1,67 +1,114 @@
-/* Brutally Simple Monoscale Design */
+/* Brutally Simple Monoscale Design - Hard Reset */
 
+/* Scorched Earth Font Rule - Universal */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.25 !important;
+  font-weight: 400 !important;
+  text-transform: lowercase !important;
+  color: #7E857A !important;
+  letter-spacing: 0px !important;
 }
 
 html, body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Arial, Helvetica, sans-serif !important;
   font-size: 12px !important;
-  line-height: 1.25;
-  font-weight: 400;
-  text-transform: lowercase;
-  color: #7E857A;
-  background: #FFFFFF;
+  line-height: 1.25 !important;
+  font-weight: 400 !important;
+  text-transform: lowercase !important;
+  color: #7E857A !important;
+  background: #FFFFFF !important;
+  letter-spacing: 0px !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Force all headings to 12px */
+/* Force all headings to 12px Arial */
 h1, h2, h3, h4, h5, h6,
-.h1, .h2, .h3, .h4, .h5, .h6 {
-  font-family: Arial, Helvetica, sans-serif;
+.h0, .h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: Arial, Helvetica, sans-serif !important;
   font-size: 12px !important;
-  line-height: 1.25;
-  font-weight: 400;
-  text-transform: lowercase;
-  color: #7E857A;
-  margin: 0;
-  padding: 0;
+  line-height: 1.25 !important;
+  font-weight: 400 !important;
+  text-transform: lowercase !important;
+  color: #7E857A !important;
+  letter-spacing: 0px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Shopify-specific product classes */
+.product__title,
+.product-card__title,
+.product-title,
+.section-title,
+.page-title {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.25 !important;
+  font-weight: 400 !important;
+  text-transform: lowercase !important;
+  color: #7E857A !important;
+  letter-spacing: 0px !important;
+}
+
+/* Rich Text Editor */
+.rte,
+.rte p,
+.rte h1,
+.rte h2,
+.rte h3 {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.25 !important;
+  font-weight: 400 !important;
+  text-transform: lowercase !important;
+  color: #7E857A !important;
+  letter-spacing: 0px !important;
 }
 
 /* Links */
 a {
-  text-decoration: none;
-  color: #7E857A;
+  text-decoration: none !important;
+  color: #7E857A !important;
   font-size: 12px !important;
-  font-weight: 400;
-  text-transform: lowercase;
+  font-weight: 400 !important;
+  text-transform: lowercase !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  letter-spacing: 0px !important;
 }
 
 a:hover {
-  text-decoration: underline;
+  text-decoration: underline !important;
 }
 
 /* Buttons - Monoscale */
-button {
-  font-family: Arial, Helvetica, sans-serif;
+button,
+.btn,
+.button {
+  font-family: Arial, Helvetica, sans-serif !important;
   font-size: 12px !important;
-  line-height: 1.25;
-  font-weight: 400;
-  text-transform: lowercase;
-  background: #FFFFFF;
-  border: 1px solid rgba(126, 133, 122, 0.3);
-  padding: 8px 16px;
-  cursor: pointer;
-  color: #7E857A;
-  border-radius: 999px;
+  line-height: 1.25 !important;
+  font-weight: 400 !important;
+  text-transform: lowercase !important;
+  background: #FFFFFF !important;
+  border: 1px solid rgba(126, 133, 122, 0.3) !important;
+  padding: 8px 16px !important;
+  cursor: pointer !important;
+  color: #7E857A !important;
+  border-radius: 999px !important;
+  letter-spacing: 0px !important;
   transition: all 0.2s;
 }
 
-button:hover {
-  text-decoration: underline;
+button:hover,
+.btn:hover,
+.button:hover {
+  text-decoration: underline !important;
 }
 
 /* Selected/CTA Button State */
@@ -69,59 +116,82 @@ button.selected,
 button[type="submit"],
 .add-to-cart-btn,
 .cart-checkout-btn {
-  background: #7E857A;
-  color: #FFFFFF;
-  border-color: #7E857A;
+  background: #7E857A !important;
+  color: #FFFFFF !important;
+  border-color: #7E857A !important;
 }
 
 button.selected:hover,
 button[type="submit"]:hover,
 .add-to-cart-btn:hover,
 .cart-checkout-btn:hover {
-  text-decoration: none;
+  text-decoration: none !important;
   opacity: 0.9;
 }
 
 /* Inputs - Monoscale */
-input, select, textarea {
-  font-family: Arial, Helvetica, sans-serif;
+input,
+select,
+textarea {
+  font-family: Arial, Helvetica, sans-serif !important;
   font-size: 12px !important;
-  line-height: 1.25;
-  font-weight: 400;
-  text-transform: lowercase;
-  color: #7E857A;
-  border: 1px solid rgba(126, 133, 122, 0.3);
-  border-radius: 12px;
-  padding: 8px 12px;
+  line-height: 1.25 !important;
+  font-weight: 400 !important;
+  text-transform: lowercase !important;
+  color: #7E857A !important;
+  border: 1px solid rgba(126, 133, 122, 0.3) !important;
+  border-radius: 12px !important;
+  padding: 8px 12px !important;
+  letter-spacing: 0px !important;
 }
 
-input:focus, select:focus, textarea:focus {
-  outline: none;
-  border-color: #7E857A;
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none !important;
+  border-color: #7E857A !important;
 }
 
 /* Paragraphs and Text */
 p {
   font-size: 12px !important;
-  line-height: 1.25;
-  font-weight: 400;
-  text-transform: lowercase;
-  color: #7E857A;
-  margin: 0;
+  line-height: 1.25 !important;
+  font-weight: 400 !important;
+  text-transform: lowercase !important;
+  color: #7E857A !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  letter-spacing: 0px !important;
+  margin: 0 !important;
 }
 
 /* Lists */
 ul, ol {
-  list-style: none;
+  list-style: none !important;
   font-size: 12px !important;
+  font-family: Arial, Helvetica, sans-serif !important;
 }
 
 li {
   font-size: 12px !important;
-  line-height: 1.25;
-  font-weight: 400;
-  text-transform: lowercase;
-  color: #7E857A;
+  line-height: 1.25 !important;
+  font-weight: 400 !important;
+  text-transform: lowercase !important;
+  color: #7E857A !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  letter-spacing: 0px !important;
+}
+
+/* Navigation */
+nav a,
+.nav-link,
+.filter-link,
+.header__menu-item {
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  text-transform: lowercase !important;
+  color: #7E857A !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  letter-spacing: 0px !important;
 }
 
 /* Images */
@@ -205,35 +275,31 @@ img {
   z-index: 2;
 }
 
-/* Force Shopify default elements to 12px */
+/* Force Shopify default elements to 12px Arial */
 .shopify-section h1,
 .shopify-section h2,
 .shopify-section h3,
-.product-title,
-.section-title,
-.page-title {
+.shopify-section h4,
+.shopify-section h5,
+.shopify-section h6 {
+  font-family: Arial, Helvetica, sans-serif !important;
   font-size: 12px !important;
   font-weight: 400 !important;
   line-height: 1.25 !important;
   text-transform: lowercase !important;
   color: #7E857A !important;
-}
-
-/* Navigation */
-nav a,
-.nav-link,
-.filter-link {
-  font-size: 12px !important;
-  font-weight: 400;
-  text-transform: lowercase;
-  color: #7E857A;
+  letter-spacing: 0px !important;
 }
 
 /* Ensure no element escapes the 12px rule */
-* {
-  font-size: inherit;
-}
-
-span, div, section, article, aside, header, footer, main {
+span,
+div,
+section,
+article,
+aside,
+header,
+footer,
+main {
   font-size: 12px !important;
+  font-family: Arial, Helvetica, sans-serif !important;
 }
