@@ -39,12 +39,7 @@ async function renderCart() {
         <div class="cart-item-details">
           <div class="cart-item-title">${item.title}</div>
           ${variantTitle ? `<div class="cart-item-variant">${variantTitle}</div>` : ''}
-          <div class="cart-item-controls">
-            <button class="cart-item-qty-btn" data-action="decrease" data-key="${item.key}" data-quantity="${item.quantity}">−</button>
-            <span class="cart-item-quantity">${item.quantity}</span>
-            <button class="cart-item-qty-btn" data-action="increase" data-key="${item.key}" data-quantity="${item.quantity}">+</button>
-            <button class="cart-item-remove remove-item" data-key="${item.key}">remove</button>
-          </div>
+          <button class="cart-item-remove remove-item" data-key="${item.key}">remove</button>
         </div>
         <div class="cart-item-right">
           <div class="cart-item-price">${formatMoney(item.line_price)}</div>
@@ -108,76 +103,6 @@ async function handleCartAction(event) {
     return;
   }
 
-  // Handle quantity increase/decrease - use closest to find the button
-  const qtyBtn = event.target.closest('.cart-item-qty-btn');
-  if (qtyBtn) {
-    event.preventDefault();
-    event.stopPropagation();
-    
-    const action = qtyBtn.dataset.action;
-    const itemKey = qtyBtn.dataset.key;
-    const currentQuantity = parseInt(qtyBtn.dataset.quantity) || 1;
-    
-    if (!itemKey) return;
-
-    let newQuantity = currentQuantity;
-    if (action === 'increase') {
-      newQuantity = currentQuantity + 1;
-    } else if (action === 'decrease') {
-      newQuantity = Math.max(0, currentQuantity - 1);
-    }
-
-    // If quantity becomes 0, remove the item
-    if (newQuantity === 0) {
-      try {
-        const response = await fetch('/cart/change.js', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            id: itemKey,
-            quantity: 0
-          })
-        });
-
-        if (!response.ok) {
-          throw new Error('failed to remove item');
-        }
-
-        await renderCart();
-        return;
-      } catch (error) {
-        console.error('Error removing item:', error);
-        alert('failed to remove item');
-        return;
-      }
-    }
-
-    try {
-      const response = await fetch('/cart/change.js', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          id: itemKey,
-          quantity: newQuantity
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('failed to update quantity');
-      }
-
-      // Re-fetch and re-render cart immediately
-      await renderCart();
-      
-    } catch (error) {
-      console.error('Error updating quantity:', error);
-      alert('failed to update quantity');
-    }
-  }
 }
 
 // Format money (Shopify format)
