@@ -75,8 +75,12 @@
         <input type="hidden" name="id" id="product-variant-id" value="{{ product.selected_or_first_available_variant.id }}">
 
         <!-- Add to Bag Button -->
-        <button type="submit" class="add-to-cart-btn">
-          add to bag
+        <button type="submit" class="add-to-cart-btn {% unless product.selected_or_first_available_variant.available %}is-sold{% endunless %}" {% unless product.selected_or_first_available_variant.available %}disabled{% endunless %}>
+          {% if product.selected_or_first_available_variant.available %}
+            add to bag
+          {% else %}
+            sold
+          {% endif %}
         </button>
       </form>
 
@@ -368,12 +372,18 @@
     if (variant) {
       document.getElementById('product-variant-id').value = variant.id;
       
-      // Update button text
+      // Update button text and state
       const addToCartBtn = document.querySelector('.add-to-cart-btn');
-      addToCartBtn.textContent = 'add to bag';
       
-      // Disable button if variant unavailable
-      addToCartBtn.disabled = !variant.available;
+      if (variant.available) {
+        addToCartBtn.textContent = 'add to bag';
+        addToCartBtn.classList.remove('is-sold');
+        addToCartBtn.disabled = false;
+      } else {
+        addToCartBtn.textContent = 'sold';
+        addToCartBtn.classList.add('is-sold');
+        addToCartBtn.disabled = true;
+      }
     }
     
     // Re-check availability for all pills after selection change
