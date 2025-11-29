@@ -48,3 +48,75 @@ input, select, textarea {
 img {
   border-radius: 4px;
 }
+
+/* Ghost Button Carousel Arrows */
+.carousel-arrow-ghost {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 25%;
+  z-index: 10;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.carousel-arrow-ghost.prev {
+  left: 0;
+}
+
+.carousel-arrow-ghost.next {
+  right: 0;
+}
+
+.carousel-arrow-ghost svg {
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
+}
+
+/* Desktop: Show arrows on hover */
+.product-card:hover .carousel-arrow-ghost,
+.product-carousel-wrapper:hover .carousel-arrow-ghost {
+  opacity: 1;
+}
+
+/* Mobile: Always show arrows */
+@media (max-width: 768px) {
+  .carousel-arrow-ghost {
+    opacity: 1;
+  }
+}
+
+/* Image Stacking for Carousels */
+.image-carousel-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.image-carousel-container img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.2s ease;
+}
+
+.image-carousel-container img.inactive-img {
+  opacity: 0;
+  z-index: 1;
+}
+
+.image-carousel-container img.active-img {
+  opacity: 1;
+  z-index: 2;
+}

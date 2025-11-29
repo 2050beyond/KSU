@@ -314,6 +314,48 @@ if (addToCartForm) {
   });
 }
 
+// Carousel Navigation (Event Delegation)
+document.addEventListener('click', function(event) {
+  const arrow = event.target.closest('.carousel-arrow-ghost');
+  if (!arrow) return;
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  const container = arrow.closest('.image-carousel-container');
+  if (!container) return;
+
+  const images = container.querySelectorAll('img');
+  if (images.length <= 1) return;
+
+  const activeImg = container.querySelector('.active-img');
+  if (!activeImg) return;
+
+  const currentIndex = Array.from(images).indexOf(activeImg);
+  const direction = arrow.dataset.direction;
+  
+  let nextIndex;
+  if (direction === 'next') {
+    nextIndex = (currentIndex + 1) % images.length;
+  } else {
+    nextIndex = (currentIndex - 1 + images.length) % images.length;
+  }
+
+  const nextImg = images[nextIndex];
+
+  // Lazy load if needed
+  if (nextImg.dataset.src && !nextImg.src) {
+    nextImg.src = nextImg.dataset.src;
+    nextImg.removeAttribute('data-src');
+  }
+
+  // Switch active class
+  activeImg.classList.remove('active-img');
+  activeImg.classList.add('inactive-img');
+  nextImg.classList.remove('inactive-img');
+  nextImg.classList.add('active-img');
+});
+
 // Make functions globally available
 window.updateCartCount = updateCartCount;
 window.renderCart = renderCart;

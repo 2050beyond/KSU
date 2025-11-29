@@ -1,31 +1,38 @@
 <div class="main-product">
   <!-- Image Carousel (Top Half) -->
   <div class="product-carousel-wrapper">
-    <div class="product-carousel" id="product-carousel">
-      {% for image in product.images %}
-        <div class="carousel-slide">
+    <div class="image-carousel-container" id="product-carousel">
+      {% assign image_count = 0 %}
+      {% for image in product.images limit: 5 %}
+        {% assign image_count = image_count | plus: 1 %}
+        {% if image_count == 1 %}
           <img 
             src="{{ image | img_url: '1200x1600' }}" 
             alt="{{ product.title | escape }}"
             loading="lazy"
+            class="active-img"
           >
-        </div>
+        {% else %}
+          <img 
+            data-src="{{ image | img_url: '1200x1600' }}" 
+            alt="{{ product.title | escape }}"
+            class="inactive-img"
+          >
+        {% endif %}
       {% endfor %}
+      {% if image_count > 1 %}
+        <button class="carousel-arrow-ghost prev" data-direction="prev">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7.5 9L4.5 6L7.5 3" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button class="carousel-arrow-ghost next" data-direction="next">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4.5 3L7.5 6L4.5 9" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      {% endif %}
     </div>
-    
-    <!-- Carousel Navigation Arrows -->
-    {% if product.images.size > 1 %}
-      <button class="carousel-arrow carousel-prev" onclick="scrollCarousel(-1)" aria-label="Previous image">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M7.5 9L4.5 6L7.5 3" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-      <button class="carousel-arrow carousel-next" onclick="scrollCarousel(1)" aria-label="Next image">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M4.5 3L7.5 6L4.5 9" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-    {% endif %}
   </div>
 
   <!-- Product Info (Bottom Half) -->
@@ -90,66 +97,13 @@
     background: #FFFFFF;
   }
 
-  .product-carousel {
+  .product-carousel-wrapper .image-carousel-container {
     width: 100%;
     height: 100%;
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    scroll-behavior: smooth;
   }
 
-  .product-carousel::-webkit-scrollbar {
-    display: none;
-  }
-
-  .carousel-slide {
-    flex: 0 0 100%;
-    scroll-snap-align: start;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #FFFFFF;
-  }
-
-  .carousel-slide img {
-    width: 100%;
-    height: 100%;
+  .product-carousel-wrapper .image-carousel-container img {
     object-fit: contain;
-    display: block;
-  }
-
-  /* Carousel Arrows */
-  .carousel-arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 30px;
-    height: 30px;
-    border-radius: 999px;
-    background: #FFFFFF;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
-    transition: opacity 0.2s;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  .carousel-arrow:hover {
-    opacity: 0.8;
-  }
-
-  .carousel-prev {
-    left: 20px;
-  }
-
-  .carousel-next {
-    right: 20px;
   }
 
   /* Product Info */
@@ -328,19 +282,6 @@
       style: 'currency',
       currency: '{{ shop.currency }}'
     }).format(cents / 100);
-  }
-
-  // Carousel navigation
-  function scrollCarousel(direction) {
-    const carousel = document.getElementById('product-carousel');
-    const slideWidth = carousel.offsetWidth;
-    const currentScroll = carousel.scrollLeft;
-    const targetScroll = currentScroll + (slideWidth * direction);
-    
-    carousel.scrollTo({
-      left: targetScroll,
-      behavior: 'smooth'
-    });
   }
 
   // Handle form submission
