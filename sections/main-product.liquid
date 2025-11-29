@@ -47,21 +47,31 @@
       <!-- Variant Pickers -->
       <form id="add-to-cart-form" class="product-form">
         <div class="variant-options">
-          {% for option in product.options_with_values %}
-            <div class="option-values">
-              {% for value in option.values %}
-                <button
-                  type="button"
-                  class="variant-value {% if forloop.first %}selected{% endif %}"
-                  data-option="{{ option.name }}"
-                  data-value="{{ value }}"
-                  onclick="selectVariant(this, '{{ option.name }}', '{{ value }}')"
-                >
-                  {{ value }}
-                </button>
-              {% endfor %}
-            </div>
-          {% endfor %}
+          {% unless product.has_only_default_variant %}
+            {% for option in product.options_with_values %}
+              {% if option.values.size == 1 %}
+                {% comment %} Single option - render as text {% endcomment %}
+                <div class="variant-single-value">
+                  {{ option.values.first | downcase }}
+                </div>
+              {% else %}
+                {% comment %} Multiple options - render as pills {% endcomment %}
+                <div class="option-values">
+                  {% for value in option.values %}
+                    <button
+                      type="button"
+                      class="variant-value {% if forloop.first %}selected{% endif %}"
+                      data-option="{{ option.name }}"
+                      data-value="{{ value }}"
+                      onclick="selectVariant(this, '{{ option.name }}', '{{ value }}')"
+                    >
+                      {{ value }}
+                    </button>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endfor %}
+          {% endunless %}
         </div>
 
         <!-- Hidden input for selected variant -->
@@ -142,6 +152,15 @@
 
   /* Variant Options - Compact Pills */
   .variant-options {
+    margin-bottom: 12px;
+  }
+
+  .variant-single-value {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.25;
+    text-transform: lowercase;
+    color: #888888;
     margin-bottom: 12px;
   }
 
@@ -276,8 +295,16 @@
   const productOptions = {{ product.options | json }};
   
   {% for option in product.options_with_values %}
-    selectedOptions['{{ option.name }}'] = '{{ option.values.first }}';
+    {% if option.values.size == 1 %}
+      selectedOptions['{{ option.name }}'] = '{{ option.values.first }}';
+    {% else %}
+      selectedOptions['{{ option.name }}'] = '{{ option.values.first }}';
+    {% endif %}
   {% endfor %}
+  
+  {% if product.has_only_default_variant %}
+    // Product has only default variant, no options to select
+  {% endif %}
 
   // Create variant availability map
   const variantAvailabilityMap = {};
