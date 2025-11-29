@@ -12,8 +12,7 @@
     "home-catalog": {
       "type": "home-catalog",
       "settings": {
-        "filter_menu": "",
-        "landing_collection": "collectors-preview"
+        "default_collection": "collectors-preview"
       }
     }
   },
