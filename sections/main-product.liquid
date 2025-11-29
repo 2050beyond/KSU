@@ -448,6 +448,18 @@
     
     // Check variant availability on page load
     checkVariantAvailability();
+    
+    // Initialize button state on page load
+    const initialVariantId = document.getElementById('product-variant-id').value;
+    const initialVariant = variants.find(v => v.id.toString() === initialVariantId.toString());
+    const addToCartBtn = document.querySelector('.add-to-cart-btn');
+    if (initialVariant && addToCartBtn) {
+      if (!initialVariant.available) {
+        addToCartBtn.textContent = 'sold';
+        addToCartBtn.classList.add('is-sold');
+        addToCartBtn.disabled = true;
+      }
+    }
   });
 
   // Handle form submission
