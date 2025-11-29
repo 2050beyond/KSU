@@ -54,7 +54,7 @@
                     <img 
                       src="{{ image | img_url: '600x800' }}" 
                       alt="{{ product.title | escape }}"
-                      loading="lazy"
+                      {% if forloop.parentloop.first %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}
                       class="active-img"
                     >
                   {% else %}
