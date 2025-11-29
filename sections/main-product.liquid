@@ -1,58 +1,76 @@
 <div class="main-product">
   <!-- Image Carousel (Top Half) -->
-  <div class="product-carousel">
-    {% for image in product.images %}
-      <div class="carousel-slide">
-        <img 
-          src="{{ image | img_url: '1200x1600' }}" 
-          alt="{{ product.title | escape }}"
-          loading="lazy"
-        >
-      </div>
-    {% endfor %}
+  <div class="product-carousel-wrapper">
+    <div class="product-carousel" id="product-carousel">
+      {% for image in product.images %}
+        <div class="carousel-slide">
+          <img 
+            src="{{ image | img_url: '1200x1600' }}" 
+            alt="{{ product.title | escape }}"
+            loading="lazy"
+          >
+        </div>
+      {% endfor %}
+    </div>
+    
+    <!-- Carousel Navigation Arrows -->
+    {% if product.images.size > 1 %}
+      <button class="carousel-arrow carousel-prev" onclick="scrollCarousel(-1)" aria-label="Previous image">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7.5 9L4.5 6L7.5 3" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="carousel-arrow carousel-next" onclick="scrollCarousel(1)" aria-label="Next image">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4.5 3L7.5 6L4.5 9" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    {% endif %}
   </div>
 
   <!-- Product Info (Bottom Half) -->
   <div class="product-info">
-    <!-- Title -->
-    <h1 class="product-title">{{ product.title }}</h1>
+    <div class="product-info-content">
+      <!-- Title -->
+      <h1 class="product-title">{{ product.title }}</h1>
 
-    <!-- Price -->
-    <div class="product-price">{{ product.price | money }}</div>
+      <!-- Price -->
+      <div class="product-price">{{ product.price | money }}</div>
 
-    <!-- Variant Pickers -->
-    <form id="add-to-cart-form" class="product-form">
-      {% for option in product.options_with_values %}
-        <div class="variant-option">
-          <div class="option-name">{{ option.name }}</div>
-          <div class="option-values">
-            {% for value in option.values %}
-              <button
-                type="button"
-                class="variant-value {% if forloop.first %}selected{% endif %}"
-                data-option="{{ option.name }}"
-                data-value="{{ value }}"
-                onclick="selectVariant(this, '{{ option.name }}', '{{ value }}')"
-              >
-                {{ value }}
-              </button>
-            {% endfor %}
+      <!-- Variant Pickers -->
+      <form id="add-to-cart-form" class="product-form">
+        {% for option in product.options_with_values %}
+          <div class="variant-option">
+            <div class="option-name">{{ option.name }}</div>
+            <div class="option-values">
+              {% for value in option.values %}
+                <button
+                  type="button"
+                  class="variant-value {% if forloop.first %}selected{% endif %}"
+                  data-option="{{ option.name }}"
+                  data-value="{{ value }}"
+                  onclick="selectVariant(this, '{{ option.name }}', '{{ value }}')"
+                >
+                  {{ value }}
+                </button>
+              {% endfor %}
+            </div>
           </div>
-        </div>
-      {% endfor %}
+        {% endfor %}
 
-      <!-- Hidden input for selected variant -->
-      <input type="hidden" name="id" id="product-variant-id" value="{{ product.selected_or_first_available_variant.id }}">
+        <!-- Hidden input for selected variant -->
+        <input type="hidden" name="id" id="product-variant-id" value="{{ product.selected_or_first_available_variant.id }}">
 
-      <!-- Add to Cart Button -->
-      <button type="submit" class="add-to-cart-btn">
-        add to cart — {{ product.selected_or_first_available_variant.price | money }}
-      </button>
-    </form>
+        <!-- Add to Cart Button -->
+        <button type="submit" class="add-to-cart-btn">
+          add to cart — {{ product.selected_or_first_available_variant.price | money }}
+        </button>
+      </form>
 
-    <!-- Description -->
-    <div class="product-description">
-      {{ product.description }}
+      <!-- Description -->
+      <div class="product-description">
+        {{ product.description }}
+      </div>
     </div>
   </div>
 </div>
@@ -65,15 +83,22 @@
   }
 
   /* Image Carousel */
-  .product-carousel {
+  .product-carousel-wrapper {
     width: 100vw;
     height: 70vh;
+    position: relative;
+    background: #FFFFFF;
+  }
+
+  .product-carousel {
+    width: 100%;
+    height: 100%;
     display: flex;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    background: #FFFFFF;
+    scroll-behavior: smooth;
   }
 
   .product-carousel::-webkit-scrollbar {
@@ -81,7 +106,7 @@
   }
 
   .carousel-slide {
-    flex: 0 0 100vw;
+    flex: 0 0 100%;
     scroll-snap-align: start;
     display: flex;
     align-items: center;
@@ -96,10 +121,47 @@
     display: block;
   }
 
+  /* Carousel Arrows */
+  .carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: opacity 0.2s;
+  }
+
+  .carousel-arrow:hover {
+    opacity: 0.8;
+  }
+
+  .carousel-prev {
+    left: 20px;
+  }
+
+  .carousel-next {
+    right: 20px;
+  }
+
   /* Product Info */
   .product-info {
     padding: 20px;
     flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+
+  .product-info-content {
+    max-width: 420px;
+    width: 100%;
   }
 
   .product-title {
@@ -121,9 +183,9 @@
     margin-bottom: 30px;
   }
 
-  /* Variant Options */
+  /* Variant Options - Pill Style */
   .variant-option {
-    margin-bottom: 25px;
+    margin-bottom: 20px;
   }
 
   .option-name {
@@ -132,13 +194,13 @@
     line-height: 1.25;
     text-transform: lowercase;
     color: #999999;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
 
   .option-values {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
   }
 
   .variant-value {
@@ -146,29 +208,30 @@
     font-size: 12px;
     line-height: 1.25;
     text-transform: lowercase;
-    background: transparent;
-    border: none;
-    padding: 15px 20px;
-    min-height: 50px;
+    background: #fefefe;
+    border: 1px solid #e5e5e5;
+    border-radius: 999px;
+    padding: 8px 16px;
     cursor: pointer;
-    color: #999999;
-    text-align: left;
+    color: #000000;
     transition: all 0.2s;
   }
 
   .variant-value:hover {
-    color: #666666;
+    background: #f5f5f5;
   }
 
   .variant-value.selected {
-    color: #000000;
-    font-weight: bold;
+    background: #000000;
+    color: #FFFFFF;
+    border-color: #000000;
   }
 
-  /* Add to Cart Button */
+  /* Add to Cart Button - Compact */
   .add-to-cart-btn {
-    width: 100%;
-    height: 60px;
+    width: auto;
+    min-width: 200px;
+    padding: 12px 24px;
     background: #000000;
     color: #FFFFFF;
     font-family: Arial, sans-serif;
@@ -176,6 +239,7 @@
     line-height: 1.25;
     text-transform: lowercase;
     border: none;
+    border-radius: 999px;
     cursor: pointer;
     margin-top: 20px;
     margin-bottom: 30px;
@@ -199,6 +263,7 @@
     text-transform: lowercase;
     color: #000000;
     margin-top: 30px;
+    max-width: 420px;
   }
 
   .product-description p {
@@ -264,6 +329,19 @@
     }).format(cents / 100);
   }
 
+  // Carousel navigation
+  function scrollCarousel(direction) {
+    const carousel = document.getElementById('product-carousel');
+    const slideWidth = carousel.offsetWidth;
+    const currentScroll = carousel.scrollLeft;
+    const targetScroll = currentScroll + (slideWidth * direction);
+    
+    carousel.scrollTo({
+      left: targetScroll,
+      behavior: 'smooth'
+    });
+  }
+
   // Handle form submission
   document.getElementById('add-to-cart-form').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -323,4 +401,3 @@
   "settings": []
 }
 {% endschema %}
-
