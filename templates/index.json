@@ -11,32 +11,10 @@
   "sections": {
     "home-catalog": {
       "type": "home-catalog",
-      "blocks": {
-        "collection_row_bQAxA9": {
-          "type": "collection_row",
-          "settings": {
-            "collection": "collectors-preview"
-          }
-        },
-        "collection_row_gRE7xM": {
-          "type": "collection_row",
-          "settings": {
-            "collection": "commissions"
-          }
-        },
-        "collection_row_eKc6Nq": {
-          "type": "collection_row",
-          "settings": {
-            "collection": "prints"
-          }
-        }
-      },
-      "block_order": [
-        "collection_row_bQAxA9",
-        "collection_row_gRE7xM",
-        "collection_row_eKc6Nq"
-      ],
-      "settings": {}
+      "settings": {
+        "filter_menu": "",
+        "landing_collection": "collectors-preview"
+      }
     }
   },
   "order": [
