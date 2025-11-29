@@ -323,7 +323,7 @@
 
 <script>
   function filterProducts(collectionHandle) {
-    // Update active state
+    // Update active state immediately (so user knows button worked)
     const filterLinks = document.querySelectorAll('.filter-link');
     filterLinks.forEach(link => {
       link.classList.remove('active');
@@ -332,23 +332,36 @@
       }
     });
 
-    // Filter products
-    const productCards = document.querySelectorAll('.product-card');
-    
-    productCards.forEach(card => {
-      if (collectionHandle === 'all') {
-        card.classList.remove('hidden');
-      } else {
-        const handles = card.dataset.collectionHandles || '';
-        const handlesArray = handles.split(' ').map(h => h.trim()).filter(h => h);
-        
-        if (handlesArray.includes(collectionHandle)) {
+    // Get grid container
+    const productGrid = document.getElementById('product-grid');
+    if (!productGrid) return;
+
+    // Add filtering class to fade out
+    productGrid.classList.add('is-filtering');
+
+    // Wait for fade out, then update content
+    setTimeout(() => {
+      // Filter products
+      const productCards = document.querySelectorAll('.product-card');
+      
+      productCards.forEach(card => {
+        if (collectionHandle === 'all') {
           card.classList.remove('hidden');
         } else {
-          card.classList.add('hidden');
+          const handles = card.dataset.collectionHandles || '';
+          const handlesArray = handles.split(' ').map(h => h.trim()).filter(h => h);
+          
+          if (handlesArray.includes(collectionHandle)) {
+            card.classList.remove('hidden');
+          } else {
+            card.classList.add('hidden');
+          }
         }
-      }
-    });
+      });
+
+      // Remove filtering class to fade back in
+      productGrid.classList.remove('is-filtering');
+    }, 200);
   }
 
   // Initialize: check for default collection

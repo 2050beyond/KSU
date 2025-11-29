@@ -233,6 +233,16 @@ img {
   }
 }
 
+/* Product Grid Transition */
+.product-grid {
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+
+.product-grid.is-filtering {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
 /* Image Carousel Stacking */
 .image-carousel-container {
   position: relative;
