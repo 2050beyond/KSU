@@ -3,7 +3,7 @@
     <a href="/">{{ shop.name }}</a>
   </div>
   <div class="cart-container">
-    <a href="/checkout" id="cart-link" class="cart-link">cart (<span id="cart-count">0</span>)</a>
+    <a href="/checkout" id="cart-link" class="cart-link">bag (<span id="cart-count">0</span>)</a>
     
     <!-- Cart Overlay (Mobile Only) -->
     <div class="cart-overlay" id="cart-overlay"></div>
@@ -183,7 +183,9 @@
     background: transparent !important;
     border: none !important;
     border-width: 0 !important;
+    border-style: none !important;
     outline: none !important;
+    outline-width: 0 !important;
     padding: 0 !important;
     margin: 0 !important;
     cursor: pointer;
@@ -196,11 +198,17 @@
     -webkit-appearance: none !important;
     -moz-appearance: none !important;
     appearance: none !important;
+    line-height: normal;
   }
 
-  .cart-item-remove:hover {
+  .cart-item-remove:hover,
+  .cart-item-remove:focus,
+  .cart-item-remove:active {
     color: #999999;
     text-decoration: underline;
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
   .cart-footer {
