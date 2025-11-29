@@ -71,7 +71,7 @@ async function renderCart() {
 // Remove item from cart using event delegation
 async function handleCartAction(event) {
   const target = event.target;
-  const cartDropdown = document.getElementById('cart-dropdown') || document.getElementById('mini-cart');
+  const cartDropdown = document.getElementById('mini-cart');
   
   if (!cartDropdown) return;
 
