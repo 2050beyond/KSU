@@ -267,7 +267,7 @@ if (addToCartForm) {
   });
 }
 
-// Carousel Navigation - Native Scroll Snap
+// Carousel Navigation - Native Scroll Snap with Circular Looping
 document.addEventListener('click', function(event) {
   const arrow = event.target.closest('.carousel-arrow-ghost');
   if (!arrow) return;
@@ -282,12 +282,29 @@ document.addEventListener('click', function(event) {
   if (!track) return;
 
   const direction = arrow.dataset.direction;
-  const scrollAmount = track.offsetWidth;
+  const scrollLeft = track.scrollLeft;
+  const scrollWidth = track.scrollWidth;
+  const clientWidth = track.clientWidth;
 
   if (direction === 'next') {
-    track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    // Check if we're at or near the end
+    if (Math.ceil(scrollLeft + clientWidth) >= scrollWidth) {
+      // Loop to beginning
+      track.scrollTo({ left: 0, behavior: 'smooth' });
+    } else {
+      // Scroll forward one image
+      track.scrollBy({ left: clientWidth, behavior: 'smooth' });
+    }
   } else {
-    track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    // Prev arrow
+    // Check if we're at the start
+    if (scrollLeft === 0) {
+      // Loop to end
+      track.scrollTo({ left: scrollWidth, behavior: 'smooth' });
+    } else {
+      // Scroll backward one image
+      track.scrollBy({ left: -clientWidth, behavior: 'smooth' });
+    }
   }
 });
 
