@@ -10,21 +10,17 @@
       </nav>
     {% endif %}
   {% endif %}
-  
-  <div class="footer-copyright">
-    &copy; {{ 'now' | date: '%Y' }} {{ shop.name }}
-  </div>
 </footer>
 
 <style>
   .site-footer {
-    padding: 60px 20px;
+    padding: 20px;
     text-align: center;
     font-family: Arial, sans-serif;
-    font-size: 12px;
+    font-size: 10px;
     line-height: 1.25;
     text-transform: lowercase;
-    color: #000000;
+    color: #999999;
     background: #FFFFFF;
   }
 
@@ -34,32 +30,25 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 40px;
-    margin-bottom: 30px;
     list-style: none;
     padding: 0;
-    margin: 0 0 30px 0;
+    margin: 0;
   }
 
   .footer-link {
-    color: #000000;
+    color: #999999;
     text-decoration: none;
-    transition: opacity 0.2s;
+    transition: color 0.2s;
   }
 
   .footer-link:hover {
-    opacity: 0.6;
-  }
-
-  .footer-copyright {
-    color: #888888;
-    font-size: 11px;
-    margin-top: 20px;
+    color: #000000;
   }
 
   /* Mobile */
   @media (max-width: 768px) {
     .site-footer {
-      padding: 40px 20px;
+      padding: 20px;
     }
 
     .footer-nav {
@@ -82,4 +71,3 @@
   ]
 }
 {% endschema %}
-

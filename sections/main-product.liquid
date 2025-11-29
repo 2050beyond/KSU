@@ -69,7 +69,7 @@
 
         <!-- Add to Cart Button -->
         <button type="submit" class="add-to-cart-btn">
-          add to cart — {{ product.selected_or_first_available_variant.price | money }}
+          add to cart
         </button>
       </form>
 
@@ -183,6 +183,14 @@
     border-color: #000000;
   }
 
+  .variant-value.is-unavailable {
+    opacity: 0.3;
+    text-decoration: line-through;
+    cursor: not-allowed;
+    background: transparent;
+    pointer-events: none;
+  }
+
   /* Add to Cart Button - Compact */
   .add-to-cart-btn {
     width: auto;
@@ -264,12 +272,49 @@
 <script>
   // Variant selection logic
   let selectedOptions = {};
+  const variants = {{ product.variants | json }};
+  const productOptions = {{ product.options | json }};
   
   {% for option in product.options_with_values %}
     selectedOptions['{{ option.name }}'] = '{{ option.values.first }}';
   {% endfor %}
 
+  // Create variant availability map
+  const variantAvailabilityMap = {};
+  variants.forEach(variant => {
+    const key = variant.options.join('|');
+    variantAvailabilityMap[key] = variant.available;
+  });
+
+  // Check and mark unavailable variant pills
+  function checkVariantAvailability() {
+    const allVariantButtons = document.querySelectorAll('.variant-value');
+    
+    allVariantButtons.forEach(button => {
+      const optionName = button.dataset.option;
+      const value = button.dataset.value;
+      
+      // Create a test options object with this value
+      const testOptions = { ...selectedOptions };
+      testOptions[optionName] = value;
+      
+      // Check if this combination creates an unavailable variant
+      const variant = findVariant(testOptions);
+      
+      if (variant && !variant.available) {
+        button.classList.add('is-unavailable');
+      } else {
+        button.classList.remove('is-unavailable');
+      }
+    });
+  }
+
   function selectVariant(button, optionName, value) {
+    // Don't allow selection of unavailable variants
+    if (button.classList.contains('is-unavailable')) {
+      return;
+    }
+
     // Update selected state - find all buttons in the same option group
     const optionRow = button.closest('.option-values');
     const allButtons = optionRow.querySelectorAll('.variant-value');
@@ -285,23 +330,23 @@
     if (variant) {
       document.getElementById('product-variant-id').value = variant.id;
       
-      // Update price in button
-      const price = formatMoney(variant.price);
+      // Update button text (no price)
       const addToCartBtn = document.querySelector('.add-to-cart-btn');
-      addToCartBtn.textContent = `add to cart — ${price}`;
+      addToCartBtn.textContent = 'add to cart';
       
       // Disable button if variant unavailable
       addToCartBtn.disabled = !variant.available;
     }
+    
+    // Re-check availability for all pills after selection change
+    checkVariantAvailability();
   }
 
   function findVariant(options) {
-    const variants = {{ product.variants | json }};
-    
     for (let variant of variants) {
       let match = true;
       for (let i = 0; i < variant.options.length; i++) {
-        const optionName = {{ product.options | json }}[i];
+        const optionName = productOptions[i];
         if (options[optionName] !== variant.options[i]) {
           match = false;
           break;
@@ -319,7 +364,7 @@
     }).format(cents / 100);
   }
 
-  // Description toggle
+  // Description toggle and variant availability check
   document.addEventListener('DOMContentLoaded', function() {
     const toggleBtn = document.querySelector('.toggle-description');
     const description = document.getElementById('product-description');
@@ -337,6 +382,9 @@
         }
       });
     }
+    
+    // Check variant availability on page load
+    checkVariantAvailability();
   });
 
   // Handle form submission
@@ -377,9 +425,7 @@
 
       button.textContent = 'added to cart';
       setTimeout(() => {
-        const currentVariant = findVariant(selectedOptions);
-        const price = currentVariant ? formatMoney(currentVariant.price) : '{{ product.selected_or_first_available_variant.price | money }}';
-        button.textContent = `add to cart — ${price}`;
+        button.textContent = 'add to cart';
         button.disabled = false;
       }, 1500);
 
@@ -387,7 +433,7 @@
       console.error('Error adding to cart:', error);
       alert('failed to add item to cart');
       button.disabled = false;
-      button.textContent = `add to cart — ${formatMoney(findVariant(selectedOptions).price)}`;
+      button.textContent = 'add to cart';
     }
   });
 </script>
