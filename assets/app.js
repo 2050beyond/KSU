@@ -309,6 +309,70 @@ document.addEventListener('click', function(event) {
   nextImg.classList.add('active-img');
 });
 
+// Page Transition - Fade In
+function initPageTransition() {
+  // Add loaded class on DOMContentLoaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.classList.add('is-loaded');
+    });
+  } else {
+    document.body.classList.add('is-loaded');
+  }
+
+  // Handle Safari back button (pageshow event)
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+      document.body.classList.add('is-loaded');
+    }
+  });
+}
+
+// Page Transition - Fade Out on Link Click
+function initLinkTransitions() {
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('a');
+    if (!link) return;
+
+    // Filter constraints
+    const href = link.getAttribute('href');
+    if (!href) return;
+
+    // Ignore target="_blank"
+    if (link.target === '_blank') return;
+
+    // Ignore anchors (#)
+    if (href.startsWith('#')) return;
+
+    // Ignore modifier clicks (Cmd/Ctrl)
+    if (event.metaKey || event.ctrlKey) return;
+
+    // Ignore external links
+    try {
+      const linkUrl = new URL(href, window.location.origin);
+      if (linkUrl.origin !== window.location.origin) return;
+    } catch (e) {
+      // Invalid URL, skip
+      return;
+    }
+
+    // Ignore if href is just the current page
+    if (href === window.location.pathname || href === window.location.href) return;
+
+    // Valid internal link - trigger fade out
+    event.preventDefault();
+    document.body.classList.remove('is-loaded');
+    
+    setTimeout(() => {
+      window.location.href = href;
+    }, 300);
+  });
+}
+
+// Initialize page transitions
+initPageTransition();
+initLinkTransitions();
+
 // Global exports
 window.updateCartCount = updateCartCount;
 window.renderCart = renderCart;
