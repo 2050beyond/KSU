@@ -11,7 +11,7 @@
     {% comment %} Sort collections alphabetically by title {% endcomment %}
     {% assign sorted_collections = collections | sort: 'title' %}
     {% for collection in sorted_collections %}
-      {% unless collection.handle == 'all' or collection.handle == 'frontpage' %}
+      {% unless collection.handle == 'all' or collection.handle == 'frontpage' or collection.handle == 'product' %}
         <button class="filter-link {% if default_filter == collection.handle %}active{% endif %}" data-filter="{{ collection.handle }}" onclick="filterProducts('{{ collection.handle }}')">{{ collection.title | downcase }}</button>
       {% endunless %}
     {% endfor %}
