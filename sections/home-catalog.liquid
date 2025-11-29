@@ -1,32 +1,20 @@
-<div class="home-catalog">
+<div class="home-catalog" {% if section.settings.default_collection != blank %}data-default="{{ section.settings.default_collection.handle }}"{% endif %}>
   <!-- Filter Menu -->
   <nav class="filter-menu">
     {% assign default_filter = 'all' %}
-    {% if section.settings.landing_collection != blank %}
-      {% assign default_filter = section.settings.landing_collection.handle %}
+    {% if section.settings.default_collection != blank %}
+      {% assign default_filter = section.settings.default_collection.handle %}
     {% endif %}
     
     <button class="filter-link {% if default_filter == 'all' %}active{% endif %}" data-filter="all" onclick="filterProducts('all')">all</button>
     
-    {% if section.settings.filter_menu != blank %}
-      {% for link in section.settings.filter_menu.links %}
-        {% comment %} Extract collection handle from URL (format: /collections/handle) {% endcomment %}
-        {% assign link_handle = '' %}
-        {% if link.url contains '/collections/' %}
-          {% assign url_parts = link.url | split: '/' %}
-          {% for part in url_parts %}
-            {% if part == 'collections' %}
-              {% assign next_index = forloop.index0 | plus: 1 %}
-              {% assign link_handle = url_parts[next_index] %}
-              {% break %}
-            {% endif %}
-          {% endfor %}
-        {% endif %}
-        {% if link_handle != '' %}
-          <button class="filter-link {% if default_filter == link_handle %}active{% endif %}" data-filter="{{ link_handle }}" onclick="filterProducts('{{ link_handle }}')">{{ link.title | downcase }}</button>
-        {% endif %}
-      {% endfor %}
-    {% endif %}
+    {% comment %} Sort collections alphabetically by title {% endcomment %}
+    {% assign sorted_collections = collections | sort: 'title' %}
+    {% for collection in sorted_collections %}
+      {% unless collection.handle == 'all' or collection.handle == 'frontpage' %}
+        <button class="filter-link {% if default_filter == collection.handle %}active{% endif %}" data-filter="{{ collection.handle }}" onclick="filterProducts('{{ collection.handle }}')">{{ collection.title | downcase }}</button>
+      {% endunless %}
+    {% endfor %}
   </nav>
 
   <!-- Product Grid -->
@@ -363,13 +351,16 @@
     });
   }
 
-  // Initialize: check for landing collection
+  // Initialize: check for default collection
   document.addEventListener('DOMContentLoaded', function() {
-    {% if section.settings.landing_collection != blank %}
-      filterProducts('{{ section.settings.landing_collection.handle }}');
-    {% else %}
+    const container = document.querySelector('.home-catalog');
+    const defaultHandle = container ? container.dataset.default : null;
+    
+    if (defaultHandle) {
+      filterProducts(defaultHandle);
+    } else {
       filterProducts('all');
-    {% endif %}
+    }
   });
 </script>
 
@@ -378,15 +369,9 @@
   "name": "Home Catalog",
   "settings": [
     {
-      "type": "link_list",
-      "id": "filter_menu",
-      "label": "Filter Menu",
-      "info": "Select a menu to control which filters appear and their order"
-    },
-    {
       "type": "collection",
-      "id": "landing_collection",
-      "label": "Highlight Collection (Default View)",
+      "id": "default_collection",
+      "label": "Default Selected Collection",
       "info": "Choose which collection is shown immediately when the page loads. Leave blank to show all products."
     }
   ]
