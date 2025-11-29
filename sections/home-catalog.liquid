@@ -10,70 +10,102 @@
   </nav>
 
   <!-- Product Grid -->
-  {% paginate collections.all.products by 100 %}
+  {% paginate collections.all.products by 200 %}
     <div class="product-grid" id="product-grid">
+      {% comment %} First loop: Render all AVAILABLE products {% endcomment %}
       {% for product in collections.all.products %}
-        {% comment %} Get all collection handles this product belongs to {% endcomment %}
-        {% assign product_collections = '' %}
-        {% for collection in product.collections %}
-          {% if product_collections == '' %}
-            {% assign product_collections = collection.handle %}
-          {% else %}
-            {% assign product_collections = product_collections | append: ',' | append: collection.handle %}
-          {% endif %}
-        {% endfor %}
-        
-        {% comment %} Check if sold out {% endcomment %}
-        {% assign is_sold_out = false %}
-        {% unless product.available %}
-          {% assign is_sold_out = true %}
-        {% endunless %}
-        
-        {% comment %} Check if new (has "new" tag OR published within 30 days) {% endcomment %}
-        {% assign is_new = false %}
-        {% if product.tags contains 'new' %}
-          {% assign is_new = true %}
-        {% else %}
-          {% comment %} Check if published within last 30 days {% endcomment %}
-          {% assign published_timestamp = product.published_at | date: '%s' | plus: 0 %}
-          {% assign current_timestamp = 'now' | date: '%s' | plus: 0 %}
-          {% assign seconds_since_published = current_timestamp | minus: published_timestamp %}
-          {% assign days_since_published = seconds_since_published | divided_by: 86400 %}
-          {% if days_since_published <= 30 and days_since_published >= 0 %}
+        {% if product.available %}
+          {% comment %} Get all collection handles this product belongs to {% endcomment %}
+          {% assign product_collections = '' %}
+          {% for collection in product.collections %}
+            {% if product_collections == '' %}
+              {% assign product_collections = collection.handle %}
+            {% else %}
+              {% assign product_collections = product_collections | append: ',' | append: collection.handle %}
+            {% endif %}
+          {% endfor %}
+          
+          {% comment %} Check if new (has "new" tag OR published within 30 days) {% endcomment %}
+          {% assign is_new = false %}
+          {% if product.tags contains 'new' %}
             {% assign is_new = true %}
+          {% else %}
+            {% comment %} Check if published within last 30 days {% endcomment %}
+            {% assign published_timestamp = product.published_at | date: '%s' | plus: 0 %}
+            {% assign current_timestamp = 'now' | date: '%s' | plus: 0 %}
+            {% assign seconds_since_published = current_timestamp | minus: published_timestamp %}
+            {% assign days_since_published = seconds_since_published | divided_by: 86400 %}
+            {% if days_since_published <= 30 and days_since_published >= 0 %}
+              {% assign is_new = true %}
+            {% endif %}
           {% endif %}
-        {% endif %}
-        
-        <a 
-          href="{{ product.url }}" 
-          class="product-card {% if is_sold_out %}is-sold-out{% endif %}" 
-          data-collection-handles="{{ product_collections }}"
-        >
-          <div class="product-image">
-            {% if product.featured_image %}
-              <img 
-                src="{{ product.featured_image | img_url: '600x800' }}" 
-                alt="{{ product.title | escape }}"
-                loading="lazy"
-              >
-            {% else %}
-              <div class="no-image">no image</div>
-            {% endif %}
-          </div>
-          <div class="product-title">
-            {{ product.title }}
-            {% if is_new and is_sold_out == false %}
-              <span class="new-badge">[new]</span>
-            {% endif %}
-          </div>
-          <div class="product-price">
-            {% if is_sold_out %}
-              sold out
-            {% else %}
+          
+          <a 
+            href="{{ product.url }}" 
+            class="product-card" 
+            data-collection-handles="{{ product_collections }}"
+          >
+            <div class="product-image">
+              {% if product.featured_image %}
+                <img 
+                  src="{{ product.featured_image | img_url: '600x800' }}" 
+                  alt="{{ product.title | escape }}"
+                  loading="lazy"
+                >
+              {% else %}
+                <div class="no-image">no image</div>
+              {% endif %}
+            </div>
+            <div class="product-title">
+              {{ product.title }}
+              {% if is_new %}
+                <span class="new-badge">[new]</span>
+              {% endif %}
+            </div>
+            <div class="product-price">
               {{ product.price | money }}
+            </div>
+          </a>
+        {% endif %}
+      {% endfor %}
+      
+      {% comment %} Second loop: Render all SOLD OUT products {% endcomment %}
+      {% for product in collections.all.products %}
+        {% unless product.available %}
+          {% comment %} Get all collection handles this product belongs to {% endcomment %}
+          {% assign product_collections = '' %}
+          {% for collection in product.collections %}
+            {% if product_collections == '' %}
+              {% assign product_collections = collection.handle %}
+            {% else %}
+              {% assign product_collections = product_collections | append: ',' | append: collection.handle %}
             {% endif %}
-          </div>
-        </a>
+          {% endfor %}
+          
+          <a 
+            href="{{ product.url }}" 
+            class="product-card is-sold-out" 
+            data-collection-handles="{{ product_collections }}"
+          >
+            <div class="product-image">
+              {% if product.featured_image %}
+                <img 
+                  src="{{ product.featured_image | img_url: '600x800' }}" 
+                  alt="{{ product.title | escape }}"
+                  loading="lazy"
+                >
+              {% else %}
+                <div class="no-image">no image</div>
+              {% endif %}
+            </div>
+            <div class="product-title">
+              {{ product.title }}
+            </div>
+            <div class="product-price">
+              sold out
+            </div>
+          </a>
+        {% endunless %}
       {% endfor %}
     </div>
   {% endpaginate %}
