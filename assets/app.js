@@ -137,16 +137,60 @@ document.addEventListener('DOMContentLoaded', function() {
     miniCart.addEventListener('click', handleCartAction);
   }
 
-  // Desktop: hover cart
+  // Click handler - Prevent navigation, toggle dropdown (Mobile & Desktop)
   if (cartLink && miniCart) {
     let hoverTimeout;
     
+    // Click event - ALWAYS prevent navigation
+    cartLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      
+      if (isMobile) {
+        // Mobile: Toggle overlay
+        const isOpen = miniCart.classList.contains('is-open');
+        
+        if (isOpen) {
+          miniCart.classList.remove('is-open');
+          if (cartOverlay) cartOverlay.classList.remove('is-open');
+          cartLink.setAttribute('aria-expanded', 'false');
+        } else {
+          renderCart();
+          miniCart.classList.add('is-open');
+          if (cartOverlay) cartOverlay.classList.add('is-open');
+          cartLink.setAttribute('aria-expanded', 'true');
+        }
+      } else {
+        // Desktop: Toggle dropdown (only if not already open from hover)
+        const isActive = miniCart.classList.contains('active');
+        
+        if (isActive) {
+          // Already open from hover - keep it open (do nothing)
+          // Or optionally close it
+          miniCart.classList.add('fade-out');
+          hoverTimeout = setTimeout(() => {
+            miniCart.classList.remove('active');
+            miniCart.classList.remove('fade-out');
+            cartLink.setAttribute('aria-expanded', 'false');
+          }, 500);
+        } else {
+          // Not open - open it
+          clearTimeout(hoverTimeout);
+          renderCart();
+          miniCart.classList.remove('fade-out');
+          miniCart.classList.add('active');
+          cartLink.setAttribute('aria-expanded', 'true');
+        }
+      }
+    });
+
+    // Desktop: hover cart
     cartLink.addEventListener('mouseenter', () => {
       if (!isMobile) {
         clearTimeout(hoverTimeout);
         renderCart();
         miniCart.classList.remove('fade-out');
         miniCart.classList.add('active');
+        cartLink.setAttribute('aria-expanded', 'true');
       }
     });
 
@@ -156,6 +200,7 @@ document.addEventListener('DOMContentLoaded', function() {
         hoverTimeout = setTimeout(() => {
           miniCart.classList.remove('active');
           miniCart.classList.remove('fade-out');
+          cartLink.setAttribute('aria-expanded', 'false');
         }, 500);
       }
     });
@@ -165,6 +210,7 @@ document.addEventListener('DOMContentLoaded', function() {
         clearTimeout(hoverTimeout);
         miniCart.classList.remove('fade-out');
         miniCart.classList.add('active');
+        cartLink.setAttribute('aria-expanded', 'true');
       }
     });
 
@@ -174,24 +220,8 @@ document.addEventListener('DOMContentLoaded', function() {
         hoverTimeout = setTimeout(() => {
           miniCart.classList.remove('active');
           miniCart.classList.remove('fade-out');
+          cartLink.setAttribute('aria-expanded', 'false');
         }, 500);
-      }
-    });
-
-    // Mobile: click toggle
-    cartLink.addEventListener('click', (e) => {
-      if (isMobile) {
-        e.preventDefault();
-        const isOpen = miniCart.classList.contains('is-open');
-        
-        if (isOpen) {
-          miniCart.classList.remove('is-open');
-          if (cartOverlay) cartOverlay.classList.remove('is-open');
-        } else {
-          renderCart();
-          miniCart.classList.add('is-open');
-          if (cartOverlay) cartOverlay.classList.add('is-open');
-        }
       }
     });
 
