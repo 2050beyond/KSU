@@ -267,8 +267,15 @@ img {
   opacity: 1;
 }
 
+/* Mobile Styling */
 @media (max-width: 768px) {
-  .carousel-arrow-ghost {
+  /* Hide carousel arrows on homepage only (not product page) */
+  .home-catalog .carousel-arrow-ghost {
+    display: none !important;
+  }
+
+  /* Product page arrows remain visible */
+  .main-product .carousel-arrow-ghost {
     opacity: 1;
   }
 }
