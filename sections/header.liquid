@@ -1,23 +1,105 @@
-<header style="display: flex; justify-content: space-between; align-items: center; padding: 20px; position: relative;">
-  <div class="logo">
-    <a href="/">{{ shop.name }}</a>
+<header class="site-header">
+  <div class="header-left">
+    <div class="logo">
+      <a href="/">{{ shop.name }}</a>
+    </div>
   </div>
-  <div class="cart-container">
-    <a href="#bag" id="cart-link" class="cart-link" role="button" aria-expanded="false">bag (<span id="cart-count">0</span>)</a>
-    
-    <!-- Cart Overlay (Mobile Only) -->
-    <div class="cart-overlay" id="cart-overlay"></div>
-    
-    <!-- Mini Cart Dropdown -->
-    <div class="mini-cart-dropdown" id="mini-cart" data-cart-dropdown>
-      <div class="mini-cart-content" id="mini-cart-content">
-        <!-- Content will be rendered by JavaScript -->
+  
+  <div class="header-center">
+    {% if template.name == 'index' %}
+      <nav class="header-filter-menu">
+        <button class="filter-link active" data-filter="all" onclick="filterProducts('all')">all</button>
+        
+        {% assign sorted_collections = collections | sort: 'title' %}
+        {% for collection in sorted_collections %}
+          {% unless collection.handle == 'all' or collection.handle == 'frontpage' or collection.handle == 'product' %}
+            <button class="filter-link" data-filter="{{ collection.handle }}" onclick="filterProducts('{{ collection.handle }}')">{{ collection.title | downcase }}</button>
+          {% endunless %}
+        {% endfor %}
+      </nav>
+    {% endif %}
+  </div>
+  
+  <div class="header-right">
+    <div class="cart-container">
+      <a href="#bag" id="cart-link" class="cart-link" role="button" aria-expanded="false">bag (<span id="cart-count">0</span>)</a>
+      
+      <!-- Cart Overlay (Mobile Only) -->
+      <div class="cart-overlay" id="cart-overlay"></div>
+      
+      <!-- Mini Cart Dropdown -->
+      <div class="mini-cart-dropdown" id="mini-cart" data-cart-dropdown>
+        <div class="mini-cart-content" id="mini-cart-content">
+          <!-- Content will be rendered by JavaScript -->
+        </div>
       </div>
     </div>
   </div>
 </header>
 
 <style>
+  /* Single Line Unified Header - Desktop */
+  .site-header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: 20px;
+    position: relative;
+    gap: 20px;
+  }
+
+  .header-left {
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .header-center {
+    display: flex;
+    justify-content: center;
+  }
+
+  .header-right {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  /* Header Filter Menu */
+  .header-filter-menu {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .header-filter-menu .filter-link {
+    font-family: Arial, Helvetica, sans-serif !important;
+    font-size: 12px !important;
+    line-height: 1.25 !important;
+    text-transform: lowercase !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    cursor: pointer !important;
+    color: #7E857A !important;
+    text-decoration: none !important;
+    font-weight: 400 !important;
+    border-radius: 0 !important;
+    transition: text-decoration 0.2s;
+    display: inline !important;
+  }
+
+  .header-filter-menu .filter-link:hover {
+    text-decoration: underline !important;
+    color: #7E857A !important;
+  }
+
+  .header-filter-menu .filter-link.active {
+    color: #7E857A !important;
+    font-weight: 700 !important;
+    text-decoration: none !important;
+  }
+
   .cart-container {
     position: relative;
   }
@@ -261,8 +343,34 @@
     opacity: 0.8;
   }
 
-  /* Mobile */
+  /* Mobile - Stacked Layout */
   @media (max-width: 768px) {
+    .site-header {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      align-items: stretch;
+    }
+
+    .header-left,
+    .header-right {
+      justify-content: space-between;
+    }
+
+    .header-center {
+      order: 3;
+      justify-content: flex-start;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .header-filter-menu {
+      justify-content: flex-start;
+      flex-wrap: nowrap;
+      gap: 15px;
+      padding: 0 20px;
+    }
+
     .mini-cart-dropdown {
       position: fixed;
       top: 20px;

@@ -1,22 +1,4 @@
 <div class="home-catalog" {% if section.settings.default_collection != blank %}data-default="{{ section.settings.default_collection.handle }}"{% endif %}>
-  <!-- Filter Menu -->
-  <nav class="filter-menu">
-    {% assign default_filter = 'all' %}
-    {% if section.settings.default_collection != blank %}
-      {% assign default_filter = section.settings.default_collection.handle %}
-    {% endif %}
-    
-    <button class="filter-link {% if default_filter == 'all' %}active{% endif %}" data-filter="all" onclick="filterProducts('all')">all</button>
-    
-    {% comment %} Sort collections alphabetically by title {% endcomment %}
-    {% assign sorted_collections = collections | sort: 'title' %}
-    {% for collection in sorted_collections %}
-      {% unless collection.handle == 'all' or collection.handle == 'frontpage' or collection.handle == 'product' %}
-        <button class="filter-link {% if default_filter == collection.handle %}active{% endif %}" data-filter="{{ collection.handle }}" onclick="filterProducts('{{ collection.handle }}')">{{ collection.title | downcase }}</button>
-      {% endunless %}
-    {% endfor %}
-  </nav>
-
   <!-- Product Grid -->
   {% paginate collections.all.products by 200 %}
     <div class="product-grid" id="product-grid">
@@ -154,45 +136,6 @@
     padding: 20px 0;
   }
 
-  /* Filter Menu */
-  .filter-menu {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 30px;
-    padding: 0 20px;
-  }
-
-  .filter-link {
-    font-family: Arial, Helvetica, sans-serif !important;
-    font-size: 12px !important;
-    line-height: 1.25 !important;
-    text-transform: lowercase !important;
-    background: transparent !important;
-    border: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    cursor: pointer !important;
-    color: #7E857A !important;
-    text-decoration: none !important;
-    font-weight: 400 !important;
-    border-radius: 0 !important;
-    transition: text-decoration 0.2s;
-    display: inline !important;
-  }
-
-  .filter-link:hover {
-    text-decoration: underline !important;
-    color: #7E857A !important;
-  }
-
-  .filter-link.active {
-    color: #7E857A !important;
-    font-weight: 700 !important;
-    text-decoration: none !important;
-  }
-
   /* Product Grid */
   .product-grid {
     display: grid;
@@ -290,18 +233,14 @@
       gap: 10px;
       padding: 0 15px;
     }
-
-    .filter-menu {
-      gap: 15px;
-      padding: 0 15px;
-    }
   }
 </style>
 
 <script>
   function filterProducts(collectionHandle) {
     // Update active state immediately (so user knows button worked)
-    const filterLinks = document.querySelectorAll('.filter-link');
+    // Target filter links in header (works for both header and old location)
+    const filterLinks = document.querySelectorAll('.filter-link, .header-filter-menu .filter-link');
     filterLinks.forEach(link => {
       link.classList.remove('active');
       if (link.dataset.filter === collectionHandle) {
