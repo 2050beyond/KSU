@@ -220,7 +220,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Click handler - Prevent navigation, toggle dropdown (Mobile & Desktop)
   if (cartLink && miniCart) {
-    let hoverTimeout;
+    // Store hover timeout globally so openBag() can clear it
+    window.cartHoverTimeout = null;
     
     // Click event - ALWAYS prevent navigation, instant toggle
     cartLink.addEventListener('click', (e) => {
@@ -239,7 +240,10 @@ document.addEventListener('DOMContentLoaded', function() {
           toggleCart(false);
         } else {
           // Not open - open it (instant)
-          clearTimeout(hoverTimeout);
+          if (window.cartHoverTimeout) {
+            clearTimeout(window.cartHoverTimeout);
+            window.cartHoverTimeout = null;
+          }
           toggleCart(true);
         }
       }
@@ -248,30 +252,38 @@ document.addEventListener('DOMContentLoaded', function() {
     // Desktop: hover cart (instant open, no fetch)
     cartLink.addEventListener('mouseenter', () => {
       if (!isMobile) {
-        clearTimeout(hoverTimeout);
+        if (window.cartHoverTimeout) {
+          clearTimeout(window.cartHoverTimeout);
+          window.cartHoverTimeout = null;
+        }
         toggleCart(true);
       }
     });
 
     cartLink.addEventListener('mouseleave', () => {
       if (!isMobile) {
-        hoverTimeout = setTimeout(() => {
+        window.cartHoverTimeout = setTimeout(() => {
           toggleCart(false);
+          window.cartHoverTimeout = null;
         }, 500);
       }
     });
 
     miniCart.addEventListener('mouseenter', () => {
       if (!isMobile) {
-        clearTimeout(hoverTimeout);
+        if (window.cartHoverTimeout) {
+          clearTimeout(window.cartHoverTimeout);
+          window.cartHoverTimeout = null;
+        }
         toggleCart(true);
       }
     });
 
     miniCart.addEventListener('mouseleave', () => {
       if (!isMobile) {
-        hoverTimeout = setTimeout(() => {
+        window.cartHoverTimeout = setTimeout(() => {
           toggleCart(false);
+          window.cartHoverTimeout = null;
         }, 500);
       }
     });
