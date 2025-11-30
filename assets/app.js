@@ -380,4 +380,6 @@ initLinkTransitions();
 
 // Global exports
 window.updateCartCount = updateCartCount;
-window.renderCart = renderCart;
+window.updateCart = updateCart;
+window.toggleCart = toggleCart;
+window.toggleBag = toggleCart; // Alias for consistency
