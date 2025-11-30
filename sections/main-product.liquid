@@ -385,20 +385,29 @@
     // Find matching variant
     const variant = findVariant(selectedOptions);
     
-    if (variant) {
-      document.getElementById('MainVariantId').value = variant.id;
+    // Get the form and update the hidden input
+    const form = document.getElementById('add-to-cart-form');
+    if (variant && form) {
+      const hiddenInput = form.querySelector('input[name="id"]');
+      if (hiddenInput) {
+        hiddenInput.value = variant.id;
+      }
       
       // Update button text and state
-      const addToCartBtn = document.querySelector('.add-to-cart-btn');
+      const addToCartBtn = form.querySelector('.add-to-cart-btn');
       
       if (variant.available) {
-        addToCartBtn.textContent = 'add to bag';
-        addToCartBtn.classList.remove('is-sold');
-        addToCartBtn.disabled = false;
+        if (addToCartBtn) {
+          addToCartBtn.textContent = 'add to bag';
+          addToCartBtn.classList.remove('is-sold');
+          addToCartBtn.disabled = false;
+        }
       } else {
-        addToCartBtn.textContent = 'sold';
-        addToCartBtn.classList.add('is-sold');
-        addToCartBtn.disabled = true;
+        if (addToCartBtn) {
+          addToCartBtn.textContent = 'sold';
+          addToCartBtn.classList.add('is-sold');
+          addToCartBtn.disabled = true;
+        }
       }
     }
     
@@ -463,84 +472,107 @@
     }
   });
 
-  // Handle form submission
-  document.getElementById('add-to-cart-form').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const variantIdInput = document.getElementById('MainVariantId');
-    if (!variantIdInput) {
-      console.error('MainVariantId input not found');
-      return;
-    }
-    
-    const variantId = variantIdInput.value;
-    const button = this.querySelector('.add-to-cart-btn');
-    
-    // Validation: Check if variant ID exists
-    if (!variantId) {
-      console.error('No variant ID found');
-      return;
-    }
-
-    // Don't allow adding sold out items
-    if (button.classList.contains('is-sold') || button.disabled) {
-      return;
-    }
-
-    button.disabled = true;
-    button.textContent = 'adding...';
-
-    try {
-      const response = await fetch('/cart/add.js', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          items: [{
-            id: variantId,
-            quantity: 1
-          }]
-        })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.description || 'failed to add to cart');
-      }
-
-      // Update cart count and cart content
-      if (typeof updateCartCount === 'function') {
-        await updateCartCount();
-      }
-      if (typeof updateCart === 'function') {
-        await updateCart();
-      }
-
-      // Show feedback
-      button.textContent = 'added to bag';
-      setTimeout(() => {
-        button.textContent = 'add to bag';
-        button.disabled = false;
-      }, 1500);
-
-    } catch (error) {
-      console.error('Error adding to cart:', error);
+  // Handle form submission using FormData
+  const productForm = document.getElementById('add-to-cart-form');
+  if (productForm) {
+    productForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
       
-      // Restore button state based on variant availability
-      const variant = variants.find(v => v.id.toString() === variantId.toString());
-      if (variant && variant.available) {
-        button.disabled = false;
-        button.textContent = 'add to bag';
-        button.classList.remove('is-sold');
-      } else {
-        // If sold out, update button to sold state
-        button.disabled = true;
-        button.textContent = 'sold';
-        button.classList.add('is-sold');
+      const form = e.target;
+      const button = form.querySelector('.add-to-cart-btn');
+      
+      // Don't allow adding sold out items
+      if (button && (button.classList.contains('is-sold') || button.disabled)) {
+        return;
       }
-    }
-  });
+
+      // Create FormData from the form
+      const formData = new FormData(form);
+      const variantId = formData.get('id');
+      
+      // Debug: Log the variant ID
+      console.log('Adding Variant ID:', variantId);
+      
+      // Validation: Check if variant ID exists
+      if (!variantId) {
+        console.error('No variant ID found in form');
+        return;
+      }
+
+      if (button) {
+        button.disabled = true;
+        button.textContent = 'adding...';
+      }
+
+      try {
+        // Use Shopify routes if available, otherwise fallback
+        const cartAddUrl = (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) 
+          ? window.Shopify.routes.root + 'cart/add.js'
+          : '/cart/add.js';
+
+        const response = await fetch(cartAddUrl, {
+          method: 'POST',
+          body: formData
+        });
+
+        const responseData = await response.json();
+
+        if (response.status === 422 || !response.ok) {
+          console.error("Sold Out / Error", responseData);
+          
+          // Update button to "Sold Out" state
+          if (button) {
+            button.textContent = 'sold';
+            button.classList.add('is-sold');
+            button.disabled = true;
+          }
+          return;
+        }
+
+        // SUCCESS!
+        // 1. Refresh the Cart Data
+        if (typeof updateCart === 'function') {
+          await updateCart();
+        }
+        if (typeof updateCartCount === 'function') {
+          await updateCartCount();
+        }
+        
+        // 2. Open the Bag Dropdown (if toggleBag function exists)
+        if (typeof toggleBag === 'function') {
+          toggleBag(true);
+        } else if (typeof toggleCart === 'function') {
+          toggleCart(true);
+        }
+
+        // Show feedback
+        if (button) {
+          button.textContent = 'added to bag';
+          setTimeout(() => {
+            button.textContent = 'add to bag';
+            button.disabled = false;
+          }, 1500);
+        }
+
+      } catch (error) {
+        console.error('Error adding to cart:', error);
+        
+        // Restore button state based on variant availability
+        if (button) {
+          const variant = variants.find(v => v.id.toString() === variantId.toString());
+          if (variant && variant.available) {
+            button.disabled = false;
+            button.textContent = 'add to bag';
+            button.classList.remove('is-sold');
+          } else {
+            button.disabled = true;
+            button.textContent = 'sold';
+            button.classList.add('is-sold');
+          }
+        }
+      }
+    });
+  }
 </script>
 
 {% schema %}
