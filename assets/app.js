@@ -14,9 +14,69 @@ async function updateCartCount() {
   }
 }
 
+// Update cart HTML content (returns Promise)
+async function updateCartHTML() {
+  const miniCartContent = document.getElementById('mini-cart-content');
+  if (!miniCartContent) return;
+
+  try {
+    // Fetch cart data
+    const cart = await updateCartCount();
+    
+    // Build new HTML (don't clear old HTML until new one is ready)
+    let html = '';
+    
+    if (!cart || cart.item_count === 0) {
+      html = '<div class="cart-empty">your bag is empty.</div>';
+    } else {
+      html = '<div class="cart-items">';
+      
+      cart.items.forEach((item) => {
+        const imageUrl = item.image || 'https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-product-1_large.png';
+        const variantTitle = item.variant_title && item.variant_title !== 'Default Title' ? item.variant_title : '';
+        
+        html += `
+          <div class="cart-item">
+            <img src="${imageUrl}" alt="${item.title}" class="cart-item-image" loading="lazy">
+            <div class="cart-item-details">
+              <div class="cart-item-title">${item.title}</div>
+              ${variantTitle ? `<div class="cart-item-variant">${variantTitle}</div>` : ''}
+              <button class="cart-item-remove remove-item" data-key="${item.key}">remove</button>
+            </div>
+            <div class="cart-item-right">
+              <div class="cart-item-price">${formatMoney(item.line_price)}</div>
+            </div>
+          </div>
+        `;
+      });
+      
+      html += '</div>';
+      html += `
+        <div class="cart-footer">
+          <div class="cart-subtotal">
+            <span>subtotal</span>
+            <span>${formatMoney(cart.total_price)}</span>
+          </div>
+          <a href="/checkout" class="cart-checkout-btn" style="display: block; text-align: center; text-decoration: none;">checkout</a>
+        </div>
+      `;
+    }
+    
+    // Only swap HTML after new content is ready (prevents flash)
+    miniCartContent.innerHTML = html;
+  } catch (error) {
+    console.error('Error updating cart HTML:', error);
+  }
+}
+
+// Alias for backwards compatibility
+async function updateCart() {
+  return updateCartHTML();
+}
+
 // Legacy function name - redirects to updateCart for backwards compatibility
 async function renderCart() {
-  return updateCart();
+  return updateCartHTML();
 }
 
 // Event Delegation for Cart Actions
@@ -49,7 +109,7 @@ async function handleCartAction(event) {
       }
 
       // Update cart data after removal
-      await updateCart();
+      await updateCartHTML();
     } catch (error) {
       alert('failed to remove item');
     }
@@ -77,6 +137,67 @@ function debounce(func, wait) {
     clearTimeout(timeout);
     timeout = setTimeout(later, wait);
   };
+}
+
+// Toggle cart visibility (instant, no fetch)
+function toggleCart(open) {
+  const cartLink = document.getElementById('cart-link');
+  const miniCart = document.getElementById('mini-cart');
+  const cartOverlay = document.getElementById('cart-overlay');
+  const isMobile = window.innerWidth <= 768;
+  
+  if (!cartLink || !miniCart) return;
+  
+  if (isMobile) {
+    if (open) {
+      miniCart.classList.add('is-open');
+      if (cartOverlay) cartOverlay.classList.add('is-open');
+      cartLink.setAttribute('aria-expanded', 'true');
+    } else {
+      miniCart.classList.remove('is-open');
+      if (cartOverlay) cartOverlay.classList.remove('is-open');
+      cartLink.setAttribute('aria-expanded', 'false');
+    }
+  } else {
+    if (open) {
+      miniCart.classList.remove('fade-out');
+      miniCart.classList.add('active');
+      cartLink.setAttribute('aria-expanded', 'true');
+    } else {
+      miniCart.classList.add('fade-out');
+      setTimeout(() => {
+        miniCart.classList.remove('active');
+        miniCart.classList.remove('fade-out');
+        cartLink.setAttribute('aria-expanded', 'false');
+      }, 500);
+    }
+  }
+}
+
+// Open bag dropdown (distinct function for clarity)
+function openBag() {
+  const cartLink = document.getElementById('cart-link');
+  const miniCart = document.getElementById('mini-cart');
+  const cartOverlay = document.getElementById('cart-overlay');
+  const isMobile = window.innerWidth <= 768;
+  
+  if (!cartLink || !miniCart) return;
+  
+  // Clear any existing auto-close timers
+  if (window.cartHoverTimeout) {
+    clearTimeout(window.cartHoverTimeout);
+    window.cartHoverTimeout = null;
+  }
+  
+  if (isMobile) {
+    miniCart.classList.add('is-open');
+    if (cartOverlay) cartOverlay.classList.add('is-open');
+    cartLink.setAttribute('aria-expanded', 'true');
+  } else {
+    miniCart.classList.remove('fade-out');
+    miniCart.classList.add('active');
+    cartLink.setAttribute('aria-expanded', 'true');
+  }
 }
 
 // Initialize Cart & Interactions
@@ -175,7 +296,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Initial cart render on page load (only once)
   updateCartCount();
-  updateCart();
+  updateCartHTML();
 });
 
 // Add to Cart Form (Product Page)
@@ -239,17 +360,19 @@ if (addToCartForm && !addToCartForm.hasAttribute('data-handler-attached')) {
       }
 
       // SUCCESS!
-      // 1. Refresh the Cart Data
-      if (typeof updateCart === 'function') {
-        await updateCart();
-      }
-      if (typeof updateCartCount === 'function') {
-        await updateCartCount();
+      // 1. Update cart HTML first (await to ensure it completes)
+      if (typeof updateCartHTML === 'function') {
+        await updateCartHTML();
       }
       
-      // 2. Open the Bag Dropdown
-      if (typeof toggleCart === 'function') {
-        toggleCart(true);
+      // 2. Update cart count in header
+      if (typeof updateCartCount === 'function') {
+        updateCartCount();
+      }
+      
+      // 3. Open the Bag Dropdown
+      if (typeof openBag === 'function') {
+        openBag();
       }
       
       if (button) {
@@ -381,5 +504,7 @@ initLinkTransitions();
 // Global exports
 window.updateCartCount = updateCartCount;
 window.updateCart = updateCart;
+window.updateCartHTML = updateCartHTML;
 window.toggleCart = toggleCart;
 window.toggleBag = toggleCart; // Alias for consistency
+window.openBag = openBag;

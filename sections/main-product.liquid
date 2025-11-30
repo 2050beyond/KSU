@@ -530,19 +530,19 @@
         }
 
         // SUCCESS!
-        // 1. Refresh the Cart Data
-        if (typeof updateCart === 'function') {
-          await updateCart();
-        }
-        if (typeof updateCartCount === 'function') {
-          await updateCartCount();
+        // 1. Update cart HTML first (await to ensure it completes)
+        if (typeof updateCartHTML === 'function') {
+          await updateCartHTML();
         }
         
-        // 2. Open the Bag Dropdown (if toggleBag function exists)
-        if (typeof toggleBag === 'function') {
-          toggleBag(true);
-        } else if (typeof toggleCart === 'function') {
-          toggleCart(true);
+        // 2. Update cart count in header
+        if (typeof updateCartCount === 'function') {
+          updateCartCount();
+        }
+        
+        // 3. Open the Bag Dropdown
+        if (typeof openBag === 'function') {
+          openBag();
         }
 
         // Show feedback
