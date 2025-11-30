@@ -72,7 +72,7 @@
         </div>
 
         <!-- Hidden input for selected variant -->
-        <input type="hidden" name="id" id="product-variant-id" value="{{ product.selected_or_first_available_variant.id }}">
+        <input type="hidden" name="id" id="MainVariantId" value="{{ product.selected_or_first_available_variant.id }}">
 
         <!-- Add to Bag Button -->
         <button type="submit" class="add-to-cart-btn {% unless product.selected_or_first_available_variant.available %}is-sold{% endunless %}" {% unless product.selected_or_first_available_variant.available %}disabled{% endunless %}>
@@ -386,7 +386,7 @@
     const variant = findVariant(selectedOptions);
     
     if (variant) {
-      document.getElementById('product-variant-id').value = variant.id;
+      document.getElementById('MainVariantId').value = variant.id;
       
       // Update button text and state
       const addToCartBtn = document.querySelector('.add-to-cart-btn');
@@ -451,7 +451,7 @@
     checkVariantAvailability();
     
     // Initialize button state on page load
-    const initialVariantId = document.getElementById('product-variant-id').value;
+    const initialVariantId = document.getElementById('MainVariantId').value;
     const initialVariant = variants.find(v => v.id.toString() === initialVariantId.toString());
     const addToCartBtn = document.querySelector('.add-to-cart-btn');
     if (initialVariant && addToCartBtn) {
@@ -467,11 +467,23 @@
   document.getElementById('add-to-cart-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     
-    const variantId = document.getElementById('product-variant-id').value;
+    const variantIdInput = document.getElementById('MainVariantId');
+    if (!variantIdInput) {
+      console.error('MainVariantId input not found');
+      return;
+    }
+    
+    const variantId = variantIdInput.value;
     const button = this.querySelector('.add-to-cart-btn');
     
+    // Validation: Check if variant ID exists
     if (!variantId) {
-      alert('please select all options');
+      console.error('No variant ID found');
+      return;
+    }
+
+    // Don't allow adding sold out items
+    if (button.classList.contains('is-sold') || button.disabled) {
       return;
     }
 
@@ -485,40 +497,44 @@
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          id: variantId,
-          quantity: 1
+          items: [{
+            id: variantId,
+            quantity: 1
+          }]
         })
       });
 
       if (!response.ok) {
-        throw new Error('failed to add to cart');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.description || 'failed to add to cart');
       }
 
-      // Update cart count
+      // Update cart count and cart content
       if (typeof updateCartCount === 'function') {
-        updateCartCount();
+        await updateCartCount();
+      }
+      if (typeof updateCart === 'function') {
+        await updateCart();
       }
 
-      // Only show feedback if not sold out
-      if (!button.classList.contains('is-sold')) {
-        button.textContent = 'added to bag';
-        setTimeout(() => {
-          button.textContent = 'add to bag';
-          button.disabled = false;
-        }, 1500);
-      }
+      // Show feedback
+      button.textContent = 'added to bag';
+      setTimeout(() => {
+        button.textContent = 'add to bag';
+        button.disabled = false;
+      }, 1500);
 
     } catch (error) {
       console.error('Error adding to cart:', error);
-      alert('failed to add item to bag');
+      
       // Restore button state based on variant availability
-      const variantId = document.getElementById('product-variant-id').value;
       const variant = variants.find(v => v.id.toString() === variantId.toString());
       if (variant && variant.available) {
         button.disabled = false;
         button.textContent = 'add to bag';
         button.classList.remove('is-sold');
       } else {
+        // If sold out, update button to sold state
         button.disabled = true;
         button.textContent = 'sold';
         button.classList.add('is-sold');

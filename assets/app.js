@@ -184,12 +184,29 @@ if (addToCartForm) {
   addToCartForm.addEventListener('submit', async function(e) {
     e.preventDefault();
     
-    const formData = new FormData(this);
-    const variantId = formData.get('id');
-    
-    if (!variantId) {
-      alert('please select a variant');
+    const variantIdInput = document.getElementById('MainVariantId');
+    if (!variantIdInput) {
+      console.error('MainVariantId input not found');
       return;
+    }
+    
+    const variantId = variantIdInput.value;
+    const button = this.querySelector('.add-to-cart-btn');
+    
+    // Validation: Check if variant ID exists
+    if (!variantId) {
+      console.error('No variant ID found');
+      return;
+    }
+
+    // Check if the button is in a "sold" state
+    if (button && (button.classList.contains('is-sold') || button.disabled)) {
+      return; // Do nothing if sold out
+    }
+
+    if (button) {
+      button.disabled = true;
+      button.textContent = 'adding...';
     }
     
     try {
@@ -199,28 +216,54 @@ if (addToCartForm) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          id: variantId,
-          quantity: 1
+          items: [{
+            id: variantId,
+            quantity: 1
+          }]
         })
       });
       
       if (!response.ok) {
-        throw new Error('failed to add to cart');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.description || 'failed to add to cart');
       }
       
       // Update cart data after adding item
       await updateCartCount();
       await updateCart();
       
-      const button = this.querySelector('button[type="submit"]');
-      const originalText = button.textContent;
-      button.textContent = 'added';
-      setTimeout(() => {
-        button.textContent = originalText;
-      }, 1000);
+      if (button) {
+        button.textContent = 'added to bag';
+        setTimeout(() => {
+          button.textContent = 'add to bag';
+          button.disabled = false;
+        }, 1500);
+      }
       
     } catch (error) {
-      alert('failed to add item to cart');
+      console.error('Error adding to cart:', error);
+      
+      // Restore button state
+      if (button) {
+        // Check if variant is available (if variants array is available)
+        if (typeof variants !== 'undefined' && Array.isArray(variants)) {
+          const variant = variants.find(v => v.id.toString() === variantId.toString());
+          if (variant && !variant.available) {
+            button.disabled = true;
+            button.textContent = 'sold';
+            button.classList.add('is-sold');
+          } else {
+            button.disabled = false;
+            button.textContent = 'add to bag';
+            button.classList.remove('is-sold');
+          }
+        } else {
+          // Default: restore to normal state
+          button.disabled = false;
+          button.textContent = 'add to bag';
+          button.classList.remove('is-sold');
+        }
+      }
     }
   });
 }
