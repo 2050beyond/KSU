@@ -490,9 +490,6 @@
       const formData = new FormData(form);
       const variantId = formData.get('id');
       
-      // Debug: Log the variant ID
-      console.log('Adding Variant ID:', variantId);
-      
       // Validation: Check if variant ID exists
       if (!variantId) {
         console.error('No variant ID found in form');

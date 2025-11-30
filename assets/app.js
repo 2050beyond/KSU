@@ -111,7 +111,7 @@ async function handleCartAction(event) {
       // Update cart data after removal
       await updateCartHTML();
     } catch (error) {
-      alert('failed to remove item');
+      console.error('Error removing item:', error);
     }
   }
 }
@@ -331,9 +331,6 @@ if (addToCartForm && !addToCartForm.hasAttribute('data-handler-attached')) {
     // Create FormData from the form
     const formData = new FormData(form);
     const variantId = formData.get('id');
-    
-    // Debug: Log the variant ID
-    console.log('Adding Variant ID:', variantId);
     
     // Validation: Check if variant ID exists
     if (!variantId) {
