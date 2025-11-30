@@ -14,50 +14,9 @@ async function updateCartCount() {
   }
 }
 
+// Legacy function name - redirects to updateCart for backwards compatibility
 async function renderCart() {
-  const cart = await updateCartCount();
-  const miniCartContent = document.getElementById('mini-cart-content');
-  
-  if (!miniCartContent) return;
-
-  if (!cart || cart.item_count === 0) {
-    miniCartContent.innerHTML = '<div class="cart-empty">your cart is empty.</div>';
-    return;
-  }
-
-  let html = '<div class="cart-items">';
-  
-  cart.items.forEach((item) => {
-    const imageUrl = item.image || 'https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-product-1_large.png';
-    const variantTitle = item.variant_title && item.variant_title !== 'Default Title' ? item.variant_title : '';
-    
-    html += `
-      <div class="cart-item">
-        <img src="${imageUrl}" alt="${item.title}" class="cart-item-image" loading="lazy">
-        <div class="cart-item-details">
-          <div class="cart-item-title">${item.title}</div>
-          ${variantTitle ? `<div class="cart-item-variant">${variantTitle}</div>` : ''}
-          <button class="cart-item-remove remove-item" data-key="${item.key}">remove</button>
-        </div>
-        <div class="cart-item-right">
-          <div class="cart-item-price">${formatMoney(item.line_price)}</div>
-        </div>
-      </div>
-    `;
-  });
-  
-  html += '</div>';
-  html += `
-    <div class="cart-footer">
-      <div class="cart-subtotal">
-        <span>subtotal</span>
-        <span>${formatMoney(cart.total_price)}</span>
-      </div>
-      <a href="/checkout" class="cart-checkout-btn" style="display: block; text-align: center; text-decoration: none;">checkout</a>
-    </div>
-  `;
-  
-  miniCartContent.innerHTML = html;
+  return updateCart();
 }
 
 // Event Delegation for Cart Actions
@@ -89,7 +48,8 @@ async function handleCartAction(event) {
         throw new Error('failed to remove item');
       }
 
-      await renderCart();
+      // Update cart data after removal
+      await updateCart();
     } catch (error) {
       alert('failed to remove item');
     }
@@ -141,66 +101,41 @@ document.addEventListener('DOMContentLoaded', function() {
   if (cartLink && miniCart) {
     let hoverTimeout;
     
-    // Click event - ALWAYS prevent navigation
+    // Click event - ALWAYS prevent navigation, instant toggle
     cartLink.addEventListener('click', (e) => {
       e.preventDefault();
       
       if (isMobile) {
-        // Mobile: Toggle overlay
+        // Mobile: Toggle overlay (instant, no fetch)
         const isOpen = miniCart.classList.contains('is-open');
-        
-        if (isOpen) {
-          miniCart.classList.remove('is-open');
-          if (cartOverlay) cartOverlay.classList.remove('is-open');
-          cartLink.setAttribute('aria-expanded', 'false');
-        } else {
-          renderCart();
-          miniCart.classList.add('is-open');
-          if (cartOverlay) cartOverlay.classList.add('is-open');
-          cartLink.setAttribute('aria-expanded', 'true');
-        }
+        toggleCart(!isOpen);
       } else {
-        // Desktop: Toggle dropdown (only if not already open from hover)
+        // Desktop: Toggle dropdown (instant, no fetch)
         const isActive = miniCart.classList.contains('active');
         
         if (isActive) {
-          // Already open from hover - keep it open (do nothing)
-          // Or optionally close it
-          miniCart.classList.add('fade-out');
-          hoverTimeout = setTimeout(() => {
-            miniCart.classList.remove('active');
-            miniCart.classList.remove('fade-out');
-            cartLink.setAttribute('aria-expanded', 'false');
-          }, 500);
+          // Already open from hover - close it
+          toggleCart(false);
         } else {
-          // Not open - open it
+          // Not open - open it (instant)
           clearTimeout(hoverTimeout);
-          renderCart();
-          miniCart.classList.remove('fade-out');
-          miniCart.classList.add('active');
-          cartLink.setAttribute('aria-expanded', 'true');
+          toggleCart(true);
         }
       }
     });
 
-    // Desktop: hover cart
+    // Desktop: hover cart (instant open, no fetch)
     cartLink.addEventListener('mouseenter', () => {
       if (!isMobile) {
         clearTimeout(hoverTimeout);
-        renderCart();
-        miniCart.classList.remove('fade-out');
-        miniCart.classList.add('active');
-        cartLink.setAttribute('aria-expanded', 'true');
+        toggleCart(true);
       }
     });
 
     cartLink.addEventListener('mouseleave', () => {
       if (!isMobile) {
-        miniCart.classList.add('fade-out');
         hoverTimeout = setTimeout(() => {
-          miniCart.classList.remove('active');
-          miniCart.classList.remove('fade-out');
-          cartLink.setAttribute('aria-expanded', 'false');
+          toggleCart(false);
         }, 500);
       }
     });
@@ -208,19 +143,14 @@ document.addEventListener('DOMContentLoaded', function() {
     miniCart.addEventListener('mouseenter', () => {
       if (!isMobile) {
         clearTimeout(hoverTimeout);
-        miniCart.classList.remove('fade-out');
-        miniCart.classList.add('active');
-        cartLink.setAttribute('aria-expanded', 'true');
+        toggleCart(true);
       }
     });
 
     miniCart.addEventListener('mouseleave', () => {
       if (!isMobile) {
-        miniCart.classList.add('fade-out');
         hoverTimeout = setTimeout(() => {
-          miniCart.classList.remove('active');
-          miniCart.classList.remove('fade-out');
-          cartLink.setAttribute('aria-expanded', 'false');
+          toggleCart(false);
         }, 500);
       }
     });
@@ -228,8 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (cartOverlay) {
       cartOverlay.addEventListener('click', () => {
         if (isMobile) {
-          miniCart.classList.remove('is-open');
-          cartOverlay.classList.remove('is-open');
+          toggleCart(false);
         }
       });
     }
@@ -238,14 +167,15 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('click', (e) => {
       if (isMobile && miniCart.classList.contains('is-open')) {
         if (!cartLink.contains(e.target) && !miniCart.contains(e.target) && !cartOverlay.contains(e.target)) {
-          miniCart.classList.remove('is-open');
-          if (cartOverlay) cartOverlay.classList.remove('is-open');
+          toggleCart(false);
         }
       }
     });
   }
 
+  // Initial cart render on page load (only once)
   updateCartCount();
+  updateCart();
 });
 
 // Add to Cart Form (Product Page)
@@ -278,11 +208,9 @@ if (addToCartForm) {
         throw new Error('failed to add to cart');
       }
       
+      // Update cart data after adding item
       await updateCartCount();
-      const miniCart = document.getElementById('mini-cart');
-      if (miniCart && (miniCart.classList.contains('active') || miniCart.classList.contains('is-open'))) {
-        await renderCart();
-      }
+      await updateCart();
       
       const button = this.querySelector('button[type="submit"]');
       const originalText = button.textContent;
